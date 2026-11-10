@@ -4,6 +4,11 @@
 
 **🇧🇷 [Português](README.md) · 🇺🇸 [English](README.en.md) · 🇪🇸 [Español](README.es.md)**
 
+
+## 🎬 Assista ao vídeo
+
+**A China trouxe nova mensagem: o fim dos agentes**: https://www.youtube.com/watch?v=XX_yzA8xyt0 · versão vertical: https://www.youtube.com/watch?v=9LB89_ImgPo
+
 ## O que é
 
 A caixa-do-agente é um kit gratuito do INEMA para quem já usa agentes de IA no computador (Claude Code, Codex,
