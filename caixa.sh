@@ -74,7 +74,7 @@ ARGS=(--name "$NOME" --rm=false -w /trabalho -v "$TMP/trabalho:/trabalho"
       --memory "$MEM" --memory-swap "$MEM" --cpus "$CPUS" --pids-limit 512
       --cap-drop ALL --security-opt no-new-privileges --user "$(id -u):$(id -g)" -e HOME=/tmp)
 [ "$REDE" = 1 ] || ARGS+=(--network none)
-ARGS+=("${ENVS[@]}" "${MONTS[@]}")
+ARGS+=(${ENVS[@]+"${ENVS[@]}"} ${MONTS[@]+"${MONTS[@]}"})
 [ "$IT" = 1 ] && ARGS+=(-it)
 [ ${#ENVS[@]} -eq 0 ] || echo "  variáveis repassadas: $(printf '%s ' "${ENVS[@]}" | sed 's/-e //g')"
 [ ${#MONTS[@]} -eq 0 ] || echo "  pastas montadas: $(printf '%s ' "${MONTS[@]}" | sed 's/-v //g')"
