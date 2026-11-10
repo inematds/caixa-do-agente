@@ -145,6 +145,8 @@ def main():
     if '-h' in sys.argv or '--help' in sys.argv:
         print(__doc__.strip()); return
     args = [a for a in sys.argv[1:] if not a.startswith('--')]
+    if args and not os.path.isdir(args[0]):
+        print(f'pasta não existe: {args[0]}', file=sys.stderr); sys.exit(2)
     r = auditar(args[0] if args else '.')
     if '--json' in sys.argv:
         print(json.dumps(r, ensure_ascii=False, indent=2))

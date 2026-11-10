@@ -65,7 +65,7 @@ trap limpar EXIT
 
 echo "▶ 1/3 CRIAR   cópia de $PROJ (sem segredos)"
 EXC=(); for s in "${SEGREDOS[@]}"; do EXC+=(--exclude="$s"); done
-rsync -a "${EXC[@]}" --exclude=node_modules --exclude=.venv "$PROJ"/ "$TMP/antes"/
+rsync -a "${EXC[@]}" --exclude=node_modules --exclude=.venv --exclude="caixa-*.patch" "$PROJ"/ "$TMP/antes"/
 cp -a "$TMP/antes" "$TMP/trabalho"
 FORA=$(cd "$PROJ" && for s in "${SEGREDOS[@]}"; do find . -path ./node_modules -prune -o -name "$s" -type f -print; done | sort -u | wc -l)
 echo "  $FORA arquivo(s) de segredo ficaram de fora"
@@ -87,7 +87,7 @@ echo "  saída do comando: $RC"
 
 echo "▶ 3/3 DESTRUIR"
 # o que nunca volta nem conta como mudança: dependências e cache
-IGN=(node_modules .venv __pycache__ '*.pyc' .npm .cache)
+IGN=(node_modules .venv __pycache__ '*.pyc' .npm .cache .git)
 DX=(); RX=(); for i in "${IGN[@]}"; do DX+=(-x "$i"); RX+=(--exclude="$i"); done
 MUD=$(diff -rq "${DX[@]}" "$TMP/antes" "$TMP/trabalho" 2>/dev/null | wc -l || true)
 echo "  $MUD arquivo(s) mudaram dentro da caixa"
