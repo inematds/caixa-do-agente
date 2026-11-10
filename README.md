@@ -11,7 +11,7 @@ DeepSeek Harness) e quer que eles trabalhem com segurança. A ideia vem do que a
 harness = agente**, e o que faz o agente render é o harness, com o trabalho rodando numa caixa que nasce, executa
 e é destruída. O kit traz o `caixa.sh`, que roda qualquer agente ou comando numa caixa Docker descartável, sem
 rede e sem os seus `.env`, e o `auditar.py`, que dá nota de 0 a 10 ao harness que você já usa. Você precisa de
-Docker e Python 3 (Linux; no macOS, `brew install coreutils`).
+Docker sem `sudo` e Python 3 (Linux; no macOS, `brew install coreutils`).
 
 ## 📖 Guia de uso
 
@@ -31,7 +31,7 @@ python3 auditar.py ~/meu-projeto
 # 3. agente com a chave do modelo: só a variável pedida entra na caixa
 ./caixa.sh ~/meu-projeto --rede --env ANTHROPIC_API_KEY -- npx -y @anthropic-ai/claude-code -p "rode os testes" --dangerously-skip-permissions
 
-# 4. provar que a caixa funciona (15 checagens)
+# 4. provar que a caixa funciona (17 checagens)
 bash testes/teste.sh
 ```
 
@@ -40,7 +40,7 @@ bash testes/teste.sh
 | # | Passo | Comando | Quem |
 |---|---|---|---|
 | 1 | Baixar o kit | `git clone https://github.com/inematds/caixa-do-agente` | você |
-| 2 | Provar a caixa | `bash testes/teste.sh` → `TUDO OK (15/15)` | ⚙️ script |
+| 2 | Provar a caixa | `bash testes/teste.sh` → `TUDO OK (17/17)` | ⚙️ script |
 | 3 | Nota do harness | `python3 auditar.py ~/meu-projeto` | ⚙️ script |
 | 4 | Rodar na caixa | `./caixa.sh ~/meu-projeto -- <comando>` | ⚙️ script |
 | 5 | Revisar o patch | `less caixa-*.patch` | você |
@@ -66,7 +66,7 @@ O `--aplicar` copia arquivos novos e alterados; arquivo apagado dentro da caixa 
 | camada | o que olha | se faltar, veja |
 |---|---|---|
 | Caixa (sandbox) | sandbox do Claude Code, `sandbox_mode` do Codex, sandbox do dsh | `caixa.sh` · [rea-sem-travas](https://inematds.github.io/rea-sem-travas/guia/) |
-| Aprovação | `defaultMode` do Claude Code, `approval_policy` do Codex | [agente-blindado](https://inematds.github.io/agente-blindado/guia/) |
+| Aprovação | nenhum harness no modo "pula tudo" (`bypassPermissions`; Codex `never` + `danger-full-access`) | [agente-blindado](https://inematds.github.io/agente-blindado/guia/) |
 | Travas fora do prompt | regras `deny` e ganchos `PreToolUse` | [agente-blindado](https://inematds.github.io/agente-blindado/guia/) |
 | Verificação | testes no projeto, ganchos `Stop`/`PostToolUse` | [agente-que-aprende](https://inematds.github.io/agente-que-aprende/guia/) |
 | Contexto e memória | `AGENTS.md`, `CLAUDE.md` | [memoria-projetos](https://inematds.github.io/memoria-projetos/guia/) |

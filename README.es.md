@@ -11,7 +11,7 @@ La caixa-do-agente (caja del agente) es un kit gratuito de INEMA para quien ya u
 **modelo + harness = agente**, y lo que hace rendir al agente es el harness, con el trabajo ejecutándose en una caja
 que nace, ejecuta y se destruye. El kit trae `caixa.sh`, que ejecuta cualquier agente o comando en una caja Docker
 desechable, sin red y sin tus `.env`, y `auditar.py`, que le pone nota de 0 a 10 al harness que ya usas. Necesitas
-Docker y Python 3 (Linux; en macOS, `brew install coreutils`).
+Docker sin `sudo` y Python 3 (Linux; en macOS, `brew install coreutils`).
 
 ## 📖 Guía de uso
 
@@ -31,7 +31,7 @@ python3 auditar.py ~/meu-projeto
 # 3. agente con la clave del modelo: solo la variable pedida entra en la caja
 ./caixa.sh ~/meu-projeto --rede --env ANTHROPIC_API_KEY -- npx -y @anthropic-ai/claude-code -p "rode os testes" --dangerously-skip-permissions
 
-# 4. comprobar que la caja funciona (15 verificaciones)
+# 4. comprobar que la caja funciona (17 verificaciones)
 bash testes/teste.sh
 ```
 
@@ -42,7 +42,7 @@ Los flags y la salida de los scripts están en portugués: `--aplicar` = aplicar
 | # | Paso | Comando | Quién |
 |---|---|---|---|
 | 1 | Descargar el kit | `git clone https://github.com/inematds/caixa-do-agente` | tú |
-| 2 | Probar la caja | `bash testes/teste.sh` → `TUDO OK (15/15)` | ⚙️ script |
+| 2 | Probar la caja | `bash testes/teste.sh` → `TUDO OK (17/17)` | ⚙️ script |
 | 3 | Nota del harness | `python3 auditar.py ~/meu-projeto` | ⚙️ script |
 | 4 | Ejecutar en la caja | `./caixa.sh ~/meu-projeto -- <cmd>` | ⚙️ script |
 | 5 | Revisar el patch | `less caixa-*.patch` | tú |
@@ -67,7 +67,7 @@ El proyecto original solo cambia con `--aplicar` (pide confirmación). El `.patc
 | capa | qué mira | si falta, ve |
 |---|---|---|
 | Caja (sandbox) | sandbox de Claude Code, `sandbox_mode` de Codex, sandbox de dsh | `caixa.sh` · [rea-sem-travas](https://inematds.github.io/rea-sem-travas/guia/) |
-| Aprobación | `defaultMode` de Claude Code, `approval_policy` de Codex | [agente-blindado](https://inematds.github.io/agente-blindado/guia/) |
+| Aprobación | ningún harness en modo "saltar todo" (`bypassPermissions`; Codex `never` + `danger-full-access`) | [agente-blindado](https://inematds.github.io/agente-blindado/guia/) |
 | Bloqueos fuera del prompt | reglas `deny` y hooks `PreToolUse` | [agente-blindado](https://inematds.github.io/agente-blindado/guia/) |
 | Verificación | pruebas en el proyecto, hooks `Stop`/`PostToolUse` | [agente-que-aprende](https://inematds.github.io/agente-que-aprende/guia/) |
 | Contexto y memoria | `AGENTS.md`, `CLAUDE.md` | [memoria-projetos](https://inematds.github.io/memoria-projetos/guia/) |

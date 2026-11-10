@@ -11,7 +11,7 @@ Codex, DeepSeek Harness) and want them to work safely. The idea comes from what 
 harness = agent**, and what makes the agent perform is the harness, with the work running in a box that is created,
 executes and is destroyed. The kit includes `caixa.sh`, which runs any agent or command in a disposable Docker box,
 with no network and without your `.env` files, and `auditar.py`, which scores the harness you already use from 0 to
-10. You need Docker and Python 3 (Linux; on macOS, `brew install coreutils`).
+10. You need Docker without `sudo` and Python 3 (Linux; on macOS, `brew install coreutils`).
 
 ## 📖 User guide
 
@@ -31,7 +31,7 @@ python3 auditar.py ~/meu-projeto
 # 3. agent with the model key: only the requested variable goes into the box
 ./caixa.sh ~/meu-projeto --rede --env ANTHROPIC_API_KEY -- npx -y @anthropic-ai/claude-code -p "rode os testes" --dangerously-skip-permissions
 
-# 4. prove the box works (15 checks)
+# 4. prove the box works (17 checks)
 bash testes/teste.sh
 ```
 
@@ -42,7 +42,7 @@ Flags and script output are in Portuguese: `--aplicar` = apply, `--rede` = netwo
 | # | Step | Command | Who |
 |---|---|---|---|
 | 1 | Get the kit | `git clone https://github.com/inematds/caixa-do-agente` | you |
-| 2 | Prove the box | `bash testes/teste.sh` → `TUDO OK (15/15)` | ⚙️ script |
+| 2 | Prove the box | `bash testes/teste.sh` → `TUDO OK (17/17)` | ⚙️ script |
 | 3 | Score the harness | `python3 auditar.py ~/meu-projeto` | ⚙️ script |
 | 4 | Run in the box | `./caixa.sh ~/meu-projeto -- <cmd>` | ⚙️ script |
 | 5 | Review the patch | `less caixa-*.patch` | you |
@@ -67,7 +67,7 @@ The original project only changes with `--aplicar` (asks for confirmation). The 
 | layer | what it looks at | if missing, see |
 |---|---|---|
 | Box (sandbox) | Claude Code sandbox, Codex `sandbox_mode`, dsh sandbox | `caixa.sh` · [rea-sem-travas](https://inematds.github.io/rea-sem-travas/guia/) |
-| Approval | Claude Code `defaultMode`, Codex `approval_policy` | [agente-blindado](https://inematds.github.io/agente-blindado/guia/) |
+| Approval | no harness in "skip everything" mode (`bypassPermissions`; Codex `never` + `danger-full-access`) | [agente-blindado](https://inematds.github.io/agente-blindado/guia/) |
 | Guardrails outside the prompt | `deny` rules and `PreToolUse` hooks | [agente-blindado](https://inematds.github.io/agente-blindado/guia/) |
 | Verification | tests in the project, `Stop`/`PostToolUse` hooks | [agente-que-aprende](https://inematds.github.io/agente-que-aprende/guia/) |
 | Context and memory | `AGENTS.md`, `CLAUDE.md` | [memoria-projetos](https://inematds.github.io/memoria-projetos/guia/) |

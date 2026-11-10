@@ -22,13 +22,14 @@
 # Exemplos:
 #   ./caixa.sh ~/meu-app -- npm test
 #   ./caixa.sh ~/meu-app --rede -- npx -y @deepseek-ai/dsh@latest --help
-#   ./caixa.sh ~/meu-app --rede --env ANTHROPIC_API_KEY -- npx -y @anthropic-ai/claude-code -p "rode os testes e corrija"
-# Linux. No macOS: brew install coreutils (traz o gtimeout).
+#   ./caixa.sh ~/meu-app --rede --env ANTHROPIC_API_KEY -- npx -y @anthropic-ai/claude-code -p "rode os testes e corrija" --dangerously-skip-permissions
+# Linux. No macOS: brew install coreutils (traz o gtimeout). Docker sem sudo (usuário no grupo docker).
+# node_modules, .venv e caches não voltam para o original nem entram no patch.
 set -euo pipefail
 
 IMAGEM=node:22-slim REDE=0 MEM=4g CPUS=2 TEMPO=1800 APLICAR=0 SIM=0
 ENVS=() MONTS=() PATCHDIR=$PWD IT=0
-[ $# -ge 1 ] || { sed -n '2,26p' "$0" | sed 's/^# \{0,1\}//'; exit 1; }
+case "${1:-}" in ''|-h|--help) sed -n '2,/^set -e/p' "$0" | grep '^#' | sed 's/^# \{0,1\}//'; [ $# -ge 1 ]; exit $?;; esac
 PROJ=$(cd "$1" && pwd); shift
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -85,16 +86,19 @@ set -e
 echo "  saída do comando: $RC"
 
 echo "▶ 3/3 DESTRUIR"
-MUD=$(diff -rq "$TMP/antes" "$TMP/trabalho" 2>/dev/null | wc -l || true)
+# o que nunca volta nem conta como mudança: dependências e cache
+IGN=(node_modules .venv __pycache__ '*.pyc' .npm .cache)
+DX=(); RX=(); for i in "${IGN[@]}"; do DX+=(-x "$i"); RX+=(--exclude="$i"); done
+MUD=$(diff -rq "${DX[@]}" "$TMP/antes" "$TMP/trabalho" 2>/dev/null | wc -l || true)
 echo "  $MUD arquivo(s) mudaram dentro da caixa"
 if [ "$MUD" -gt 0 ]; then
-  (cd "$TMP" && diff -ruN antes trabalho > "$TMP/mudancas.patch" || true)
+  (cd "$TMP" && diff -ruN "${DX[@]}" antes trabalho > "$TMP/mudancas.patch" || true)
   PF="$PATCHDIR/caixa-$(date +%Y%m%d-%H%M%S).patch"
   cp "$TMP/mudancas.patch" "$PF"
   echo "  patch salvo (o diff de tudo que mudou): $PF"
   if [ "$APLICAR" = 1 ]; then
     r=s; [ "$SIM" = 1 ] || read -r -p "  aplicar no projeto original? (s/N) " r
-    if [ "$r" = s ]; then rsync -a "$TMP/trabalho"/ "$PROJ"/; echo "  aplicado em $PROJ"; fi
+    if [ "$r" = s ]; then rsync -a "${RX[@]}" "$TMP/trabalho"/ "$PROJ"/; echo "  aplicado em $PROJ"; fi
   fi
 fi
 docker rm -f "$NOME" >/dev/null 2>&1 || true

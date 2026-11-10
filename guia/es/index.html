@@ -147,7 +147,7 @@
 <section id="oque"><div class="wrap">
   <span class="chip">Qué es</span>
   <h2>Tres piezas, una idea: cuida el cuerpo del agente</h2>
-  <p class="sub">DeepSeek mostró que el mismo modelo cambia casi 9 puntos solo con cambiar el harness. Este kit lleva esa idea a tu máquina.</p>
+  <p class="sub">DeepSeek publicó que el mismo modelo (V4.1 Flash) acierta el 65,6% de las tareas de la prueba DeepSWE dentro de Codex y el 72,6% en el modo más simple de su propio harness: casi 9 puntos solo con cambiar el harness (<a href="https://huggingface.co/deepseek-ai/DeepSeek-V4.1-Flash" target="_blank" rel="noopener">tarjeta del modelo</a>). Este kit lleva esa idea a tu máquina.</p>
   <figure style="margin:0 0 26px;border-radius:16px;overflow:hidden;border:1px solid var(--line);box-shadow:0 30px 80px -30px #000"><img src="../assets/banner-grade-es.jpg" alt="Las piezas del kit: auditar, caja, crear, ejecutar, destruir y mapa de kits" loading="lazy" style="width:100%;display:block"></figure>
   <div class="grid g3">
     <div class="card"><h3>📊 auditar.py</h3><p>Lee la configuración de Claude Code, Codex y DeepSeek Harness y da una nota de 0 a 10 en 6 capas: caja, aprobación, bloqueos, verificación, contexto y secretos. Solo lee, no cambia nada.</p></div>
@@ -172,7 +172,7 @@
 <section id="pre"><div class="wrap">
   <span class="chip">Requisitos previos</span>
   <h2>Lo que necesitas</h2>
-  <p class="sub">Linux con Docker. En macOS, instala antes <code>brew install coreutils</code> (trae <code>gtimeout</code>). El auditor funciona incluso sin Docker.</p>
+  <p class="sub">Linux con Docker funcionando sin <code>sudo</code> (tu usuario en el grupo <code>docker</code>). En macOS, instala antes <code>brew install coreutils</code> (trae <code>gtimeout</code>). El auditor funciona incluso sin Docker.</p>
   <div class="grid g3">
     <div class="card"><h3>Docker</h3><p>Para la caja. Verifica que responda:</p><pre><span class="c"># comando</span>
 docker --version</pre></div>
@@ -197,8 +197,8 @@ rsync --version | head -1</pre></div>
 
   <div class="step"><div class="b">2</div><div>
     <h3>Comprueba que la caja funciona</h3>
-    <p>15 verificaciones: <code>.env</code> y claves quedan fuera, red cerrada, original intacto, contenedor borrado, <code>--aplicar</code> funciona, <code>--env</code> pasa solo la variable pedida, <code>--interativo</code> abre una terminal, y el auditor detecta secretos, sandbox desactivado y máquina sin harness.</p>
-<pre><span class="k">bash testes/teste.sh</span>  <span class="c"># termina con: TUDO OK (15/15)</span></pre>
+    <p>17 verificaciones (la 1.ª vez descarga la imagen <code>node:22-slim</code>, ~250 MB; la verificación de <code>--interativo</code> usa el comando <code>script</code>): <code>.env</code> y claves quedan fuera, red cerrada, original intacto, contenedor borrado, <code>--aplicar</code> funciona, <code>--env</code> pasa solo la variable pedida, <code>--interativo</code> abre una terminal, la caché y <code>node_modules</code> no vuelven al original, <code>--help</code> funciona, y el auditor detecta secretos, sandbox desactivado y máquina sin harness.</p>
+<pre><span class="k">bash testes/teste.sh</span>  <span class="c"># termina con: TUDO OK (17/17)</span></pre>
   </div></div>
 
   <div class="step"><div class="b">3</div><div>
@@ -230,15 +230,16 @@ rsync --version | head -1</pre></div>
 
   <div class="step"><div class="b">6</div><div>
     <h3>Revisa y aplica</h3>
-    <p>Cada ejecución que cambia archivos guarda un <code>caixa-AAAAMMDD-HHMMSS.patch</code>: un archivo de texto con la diferencia (el <em>diff</em>) de todo lo que cambió. Queda en la carpeta desde donde ejecutaste el comando (o en la que indiques con <code>--patch PASTA</code>). Sirve para que lo revises; no hace falta aplicarlo con <code>git apply</code>. Para copiar los cambios de vuelta, usa <code>--aplicar</code> (pide confirmación; un archivo borrado en la caja no se borra en el original).</p>
+    <p>Cada ejecución que cambia archivos guarda un <code>caixa-AAAAMMDD-HHMMSS.patch</code>: un archivo de texto con la diferencia (el <em>diff</em>) de todo lo que cambió. Queda en la carpeta desde donde ejecutaste el comando (o en la que indiques con <code>--patch PASTA</code>) y sirve para que lo revises; no hace falta aplicarlo con <code>git apply</code>. Para copiar los cambios de vuelta, usa <code>--aplicar</code> (pide confirmación). Los archivos nuevos y modificados vuelven; <code>node_modules</code>, <code>.venv</code> y las cachés no vuelven; un archivo borrado en la caja no se borra en el original.</p>
 <pre><span class="k">less caixa-*.patch</span>
-<span class="k">./caixa.sh ~/meu-projeto --aplicar -- npm run format</span></pre>
+<span class="k">./caixa.sh ~/meu-projeto --rede --aplicar -- sh -c 'npm install &amp;&amp; npm run format'</span></pre>
   </div></div>
 
   <div class="step"><div class="b">7</div><div>
-    <h3>Ajusta los topes</h3>
-    <p>Por defecto: imagen <code>node:22-slim</code>, 4 GB de memoria, 2 CPU, 30 minutos.</p>
-<pre><span class="k">./caixa.sh ~/meu-projeto --memoria 8g --cpus 4 --tempo 7200 -- make build</span></pre>
+    <h3>Ajusta los topes y la imagen</h3>
+    <p>Por defecto: imagen <code>node:22-slim</code>, 4 GB de memoria, 2 CPU, 30 minutos. Usa <code>--imagem</code> cuando el comando necesite otro lenguaje o herramienta (la imagen de Node no trae <code>make</code>, por ejemplo).</p>
+<pre><span class="k">./caixa.sh ~/meu-projeto --rede --memoria 8g --cpus 4 --tempo 7200 -- sh -c 'npm install &amp;&amp; npm run build'</span>
+<span class="k">./caixa.sh ~/meu-projeto --imagem python:3.12 -- make build</span>  <span class="c"># imagen completa, con make</span></pre>
   </div></div>
 </div></section>
 
@@ -255,13 +256,14 @@ rsync --version | head -1</pre></div>
 <section id="mapa"><div class="wrap">
   <span class="chip">Mapa de kits</span>
   <h2>Cada capa tiene un kit INEMA</h2>
-  <p class="sub">El auditor apunta a estas guías cuando falta una capa.</p>
-  <div class="phase"><div class="tag">Entender</div><div class="d"><strong><a href="https://inematds.github.io/ai-harness/" target="_blank" rel="noopener">ai-harness</a> · <a href="https://inematds.github.io/agentes-harness/" target="_blank" rel="noopener">agentes-harness</a></strong><span>Qué es un harness en video, y un curso rápido de por qué la terminal con agente le gana al chat.</span></div></div>
-  <div class="phase"><div class="tag">Profundizar</div><div class="d"><strong><a href="https://inematds.github.io/hardnessai/" target="_blank" rel="noopener">hardnessai</a></strong><span>Curso completo de ingeniería agéntica: 5 rutas, 30 módulos.</span></div></div>
-  <div class="phase"><div class="tag">DeepSeek Harness</div><div class="d"><strong><a href="https://inematds.github.io/rea-sem-travas/guia/" target="_blank" rel="noopener">rea-sem-travas</a> · <a href="https://inematds.github.io/dsh-orchestrator/guia/" target="_blank" rel="noopener">dsh-orchestrator</a> · <a href="https://inematds.github.io/ia-sem-censura-defensiva/guia/" target="_blank" rel="noopener">ia-sem-censura-defensiva</a></strong><span>El dsh local en contenedor con modelo abierto; dsh, Codex y Claude Code en el mismo entorno; modelo sin rechazos para seguridad defensiva.</span></div></div>
-  <div class="phase"><div class="tag">Bloqueos</div><div class="d"><strong><a href="https://inematds.github.io/agente-blindado/guia/" target="_blank" rel="noopener">agente-blindado</a></strong><span>5 bloqueos contra inyección de prompt, fuera del prompt, y 10 ataques inofensivos para medir tu agente.</span></div></div>
-  <div class="phase"><div class="tag">Verificación</div><div class="d"><strong><a href="https://inematds.github.io/agente-que-aprende/guia/" target="_blank" rel="noopener">agente-que-aprende</a></strong><span>Cada error se vuelve una regla que bloquea el mismo error la próxima vez.</span></div></div>
-  <div class="phase"><div class="tag">Contexto</div><div class="d"><strong><a href="https://inematds.github.io/memoria-projetos/guia/" target="_blank" rel="noopener">memoria-projetos</a> · <a href="https://inematds.github.io/esforco-certo/guia/" target="_blank" rel="noopener">esforco-certo</a></strong><span>Memoria del proyecto que el agente consulta, y cuánto esfuerzo del modelo merece cada tarea.</span></div></div>
+  <p class="sub">Las mismas 6 capas del auditor. Cuando falta una, la flecha del auditor apunta a la fila de aquí.</p>
+  <div class="phase"><div class="tag">Caja</div><div class="d"><strong>caixa.sh (este kit) · <a href="https://inematds.github.io/rea-sem-travas/guia/" target="_blank" rel="noopener">rea-sem-travas</a> · <a href="https://inematds.github.io/dsh-orchestrator/guia/" target="_blank" rel="noopener">dsh-orchestrator</a></strong><span>La caja desechable; el DeepSeek Harness en contenedor con modelo abierto; dsh, Codex y Claude Code en el mismo entorno aislado.</span></div></div>
+  <div class="phase"><div class="tag">Aprobación</div><div class="d"><strong><a href="https://inematds.github.io/agente-blindado/guia/" target="_blank" rel="noopener">agente-blindado</a></strong><span>Aprobación antes de una acción destructiva y permisos mínimos, fuera del prompt.</span></div></div>
+  <div class="phase"><div class="tag">Bloqueos</div><div class="d"><strong><a href="https://inematds.github.io/agente-blindado/guia/" target="_blank" rel="noopener">agente-blindado</a></strong><span>5 bloqueos contra inyección de prompt y 10 ataques inofensivos para medir tu agente.</span></div></div>
+  <div class="phase"><div class="tag">Verificación</div><div class="d"><strong><a href="https://inematds.github.io/agente-que-aprende/guia/" target="_blank" rel="noopener">agente-que-aprende</a></strong><span>Cada error se vuelve una regla (gancho) que bloquea el mismo error la próxima vez.</span></div></div>
+  <div class="phase"><div class="tag">Contexto</div><div class="d"><strong><a href="https://inematds.github.io/memoria-projetos/guia/" target="_blank" rel="noopener">memoria-projetos</a></strong><span>Memoria del proyecto que el agente consulta antes de actuar.</span></div></div>
+  <div class="phase"><div class="tag">Secretos</div><div class="d"><strong>caixa.sh (este kit) · <a href="https://inematds.github.io/ia-sem-censura-defensiva/guia/" target="_blank" rel="noopener">ia-sem-censura-defensiva</a></strong><span>La caja deja <code>.env</code> y claves fuera; el otro kit muestra credenciales fuera del chat y de git en un uso de seguridad defensiva.</span></div></div>
+  <div class="phase"><div class="tag">Para entender</div><div class="d"><strong><a href="https://inematds.github.io/ai-harness/" target="_blank" rel="noopener">ai-harness</a> · <a href="https://inematds.github.io/agentes-harness/" target="_blank" rel="noopener">agentes-harness</a> · <a href="https://inematds.github.io/hardnessai/" target="_blank" rel="noopener">hardnessai</a> · <a href="https://inematds.github.io/esforco-certo/guia/" target="_blank" rel="noopener">esforco-certo</a></strong><span>Qué es un harness (video), curso rápido de terminal y harness, curso completo de ingeniería agéntica, y cuánto esfuerzo del modelo merece cada tarea.</span></div></div>
   <div class="phase"><div class="tag">Fuentes</div><div class="d"><strong><a href="https://github.com/deepseek-ai/deepseek-harness" target="_blank" rel="noopener">DeepSeek Harness</a> · <a href="https://arxiv.org/abs/2609.22978" target="_blank" rel="noopener">DSec (arXiv)</a></strong><span>El harness abierto de DeepSeek (MIT) y el artículo de DSec, la plataforma donde DeepSeek crea las cajas para entrenar a los agentes: ~3 millones por día, más de 380 mil al mismo tiempo.</span></div></div>
 </div></section>
 

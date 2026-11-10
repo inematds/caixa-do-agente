@@ -35,4 +35,8 @@ rm -rf "$H"
 if command -v script >/dev/null; then
   echo | timeout 60 script -qec "./caixa.sh '$P' --imagem $IMG --interativo --tempo 20 -- tty" /dev/null 2>&1 | grep -aq '/dev/pts' && ok "--interativo abre terminal" || ruim "--interativo"
 else ok "--interativo (pulado: sem o comando script)"; fi
-echo; [ $F -eq 0 ] && echo "TUDO OK (15/15)" || { echo "$F falha(s)"; exit 1; }
+# cache e dependências criados na caixa não contam nem voltam
+./caixa.sh "$P" --imagem $IMG --aplicar --sim -- sh -c 'mkdir -p node_modules/x __pycache__ && echo a > node_modules/x/i.js && echo b > __pycache__/m.pyc' > "$P.log" 2>&1
+grep -q '0 arquivo(s) mudaram' "$P.log" && [ ! -e "$P/node_modules" ] && [ ! -e "$P/__pycache__" ] && ok "node_modules/__pycache__ não voltam" || ruim "cache voltou ou contou"; rm -f "$P.log"
+./caixa.sh --help | grep -q 'Uso:' && ok "--help mostra a ajuda" || ruim "--help"
+echo; [ $F -eq 0 ] && echo "TUDO OK (17/17)" || { echo "$F falha(s)"; exit 1; }

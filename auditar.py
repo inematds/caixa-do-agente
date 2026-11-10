@@ -26,7 +26,7 @@ SEGREDOS = ['.env', '.env.*', '*.pem', '*.key', 'id_rsa*', 'id_ed25519*', '*.p12
             'service-account*.json', '.netrc', '.npmrc', '.pypirc', 'token*.json', 'secrets.*']
 KITS = {
     'caixa': 'caixa.sh deste kit; DeepSeek Harness em container: rea-sem-travas (https://inematds.github.io/rea-sem-travas/guia/)',
-    'aprovacao': 'esforco-certo e agente-blindado (https://inematds.github.io/agente-blindado/guia/)',
+    'aprovacao': 'agente-blindado — aprovação antes de ação destrutiva (https://inematds.github.io/agente-blindado/guia/)',
     'travas': 'agente-blindado — 5 travas fora do prompt (https://inematds.github.io/agente-blindado/guia/)',
     'verificacao': 'agente-que-aprende — lição vira trava (https://inematds.github.io/agente-que-aprende/guia/)',
     'contexto': 'memoria-projetos (https://inematds.github.io/memoria-projetos/guia/)',
