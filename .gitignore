@@ -1,0 +1,5 @@
+.log-*
+.gerar-artes.sh
+guia/assets/*.codex.log
+caixa-*.patch
+__pycache__/

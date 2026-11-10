@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Caja del agente (caixa-do-agente) — el harness vale más que el modelo</title>
+<meta name="description" content="Kit gratis: ponle nota de 0 a 10 al harness de tu agente (Claude Code, Codex, DeepSeek Harness) y ejecuta cualquier agente en una caja Docker desechable, sin red y sin tus .env.">
+<link rel="alternate" hreflang="pt-BR" href="https://inematds.github.io/caixa-do-agente/guia/">
+<link rel="alternate" hreflang="en" href="https://inematds.github.io/caixa-do-agente/guia/en/">
+<link rel="alternate" hreflang="es" href="https://inematds.github.io/caixa-do-agente/guia/es/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;800&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0c0c10; --bg2:#14141b; --card:#16161e; --line:#272730;
+    --txt:#e9e9ee; --mut:#9a9aa6; --amb:#E2A23B; --amb2:#f0c070; --sky:#38bdf8; --pro:#cbd5e1;
+    color-scheme:dark;
+  }
+  body.light{
+    --bg:#f6f7f9; --bg2:#eceef2; --card:#ffffff; --line:#e1e3ea;
+    --txt:#1a1a22; --mut:#5b5b68; --amb:#b9791d; --amb2:#a16207; --sky:#0369a1; --pro:#b45309;
+    color-scheme:light;
+  }
+  body.light .hero .glow{opacity:.5}
+  body.light pre{background:#0e0e14;color:#d6d6e0}
+  body.light pre .c{color:#8a8a98}
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--txt);font:16px/1.65 Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  h1,h2,h3{font-family:Sora,sans-serif;line-height:1.15;margin:0}
+  a{color:var(--amb);text-decoration:none}
+  code,pre{font-family:"JetBrains Mono",monospace}
+  .wrap{max-width:1160px;margin:0 auto;padding:0 22px}
+  .mut{color:var(--mut)} .amb{color:var(--amb)}
+  .chip{display:inline-block;font-size:.72rem;letter-spacing:.14em;text-transform:uppercase;color:var(--amb);font-weight:600;font-family:Sora}
+  nav{position:sticky;top:0;z-index:30;backdrop-filter:blur(12px);background:rgba(12,12,16,.78);border-bottom:1px solid var(--line)}
+  nav .wrap{display:flex;align-items:center;gap:22px;height:60px}
+  nav .brand{display:flex;align-items:center;gap:8px;font-family:Sora;font-weight:800;letter-spacing:-.02em;color:var(--amb)}
+  nav .brand .emoji{font-size:1.25rem}
+  nav .sep{color:var(--mut);opacity:.45}
+  nav .inema{color:var(--sky);font-weight:600;font-size:.88rem;font-family:Sora}
+  nav .inema:hover{filter:brightness(1.15)}
+  nav .pro{color:var(--pro);font-weight:600;font-size:.88rem;font-family:Sora}
+  nav .pro:hover{filter:brightness(1.15)}
+  nav .clubpro{display:inline-flex;align-items:center;gap:6px}
+  nav .links{margin-left:auto;display:flex;align-items:center;gap:20px;font-size:.92rem}
+  nav .links a.sec{color:var(--mut)} nav .links a.sec:hover{color:var(--txt)}
+  .lang{display:inline-flex;gap:2px;font-family:Sora;font-size:.78rem}
+  .lang a{color:var(--mut);padding:.2em .45em;border-radius:6px} .lang a.on{color:var(--amb);background:rgba(226,162,59,.12)}
+  .tgl{background:var(--bg2);border:1px solid var(--line);color:var(--txt);width:38px;height:38px;border-radius:10px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:1.05rem}
+  .tgl:hover{border-color:var(--amb)}
+  .btn{display:inline-block;background:var(--amb);color:#1a1206;font-weight:600;padding:.6em 1.05em;border-radius:10px;font-family:Sora}
+  .btn.ghost{background:transparent;color:var(--txt);border:1px solid var(--line)}
+  @media(max-width:760px){nav .links a.sec{display:none}}
+  @media(max-width:520px){nav .wrap{gap:8px;padding:8px 14px;height:auto;flex-wrap:wrap} nav .links{gap:8px;margin-left:0;width:100%;justify-content:space-between} nav .btn{padding:.45em .7em;font-size:.82rem} .tgl{width:34px;height:34px}}
+  .hero{position:relative;overflow:hidden;border-bottom:1px solid var(--line)}
+  .hero .glow{position:absolute;inset:-40% -20% auto auto;width:70%;height:600px;background:radial-gradient(closest-side,rgba(226,162,59,.22),transparent 70%);pointer-events:none}
+  .hero .wrap{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center;padding:74px 22px}
+  .hero h1{font-size:clamp(2.2rem,5vw,3.5rem);font-weight:800;letter-spacing:-.025em}
+  .hero p.lead{font-size:1.18rem;color:var(--mut);margin:1.1em 0 1.6em;max-width:34ch}
+  .hero .cta{display:flex;gap:12px;flex-wrap:wrap}
+  .hero figure{margin:0;border-radius:16px;overflow:hidden;border:1px solid var(--line);box-shadow:0 30px 80px -30px #000}
+  .hero figure img{width:100%;height:auto;display:block}
+  .resumo{padding:38px 0 34px;border-bottom:1px solid var(--line)}
+  .resumo p{font-size:1.12rem;line-height:1.7;max-width:74ch;margin:.55em 0 0}
+  @media(max-width:780px){.hero .wrap{grid-template-columns:1fr;padding:48px 22px}}
+  section{padding:62px 0;border-bottom:1px solid var(--line)}
+  section h2{font-size:clamp(1.5rem,3.4vw,2.1rem);font-weight:800;letter-spacing:-.02em}
+  section .sub{color:var(--mut);margin:.6em 0 2em;max-width:62ch}
+  .grid{display:grid;gap:16px}
+  .g3{grid-template-columns:repeat(3,1fr)} .g4{grid-template-columns:repeat(4,1fr)} .g2{grid-template-columns:repeat(2,1fr)}
+  @media(max-width:820px){.g3,.g4{grid-template-columns:1fr 1fr}}
+  @media(max-width:540px){.g2,.g3,.g4{grid-template-columns:1fr}}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px}
+  .card h3{font-size:1.05rem;margin-bottom:.4em}
+  .card p{color:var(--mut);font-size:.92rem;margin:0}
+  .num{display:inline-flex;width:30px;height:30px;align-items:center;justify-content:center;border-radius:8px;background:rgba(226,162,59,.14);color:var(--amb);font-family:Sora;font-weight:800;font-size:.9rem;margin-bottom:.7em}
+  .flow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+  .flow span{background:var(--bg2);border:1px solid var(--line);border-radius:999px;padding:.45em .9em;font-size:.85rem;font-family:Sora;font-weight:600}
+  .flow .arr{color:var(--amb);border:none;background:none;padding:0 .1em}
+  pre{background:#0a0a0e;border:1px solid var(--line);border-radius:12px;padding:16px 18px;overflow:auto;font-size:.86rem;line-height:1.6;color:#d6d6e0}
+  pre .c{color:#6f6f7c} pre .k{color:var(--amb2)} pre .s{color:#9ece6a}
+  .step{display:grid;grid-template-columns:46px minmax(0,1fr);gap:16px;margin-bottom:26px}
+  .step>div,.card{min-width:0}
+  p code,li code,td code{overflow-wrap:anywhere}
+  .step .b{width:46px;height:46px;border-radius:12px;background:var(--amb);color:#1a1206;font-family:Sora;font-weight:800;font-size:1.25rem;display:flex;align-items:center;justify-content:center}
+  .step h3{font-size:1.12rem;margin-bottom:.3em}
+  .step p{color:var(--mut);margin:.2em 0 .7em}
+  .ex{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+  @media(max-width:680px){.ex{grid-template-columns:1fr}}
+  .ex figure{margin:0;border-radius:14px;overflow:hidden;border:1px solid var(--line)}
+  .ex figure img{width:100%;height:auto;display:block}
+  .ex figcaption{padding:12px 14px;font-size:.88rem;color:var(--mut);background:var(--card)}
+  .phase{display:flex;gap:14px;padding:16px 0;border-bottom:1px solid var(--line)}
+  .phase:last-child{border:none}
+  .phase .tag{flex:0 0 92px;font-family:Sora;font-weight:800;color:var(--amb)}
+  .phase .d strong{display:block;margin-bottom:.2em}
+  .phase .d span{color:var(--mut);font-size:.92rem}
+  footer{padding:46px 0;text-align:center;color:var(--mut);font-size:.9rem}
+  .pill{display:inline-block;border:1px solid var(--line);border-radius:999px;padding:.3em .8em;font-size:.78rem;color:var(--mut);margin:0 4px}
+</style>
+</head>
+<body>
+
+<nav><div class="wrap">
+  <a class="brand" href="#top"><span class="emoji">📦</span> Caja del agente</a>
+  <span class="sep">|</span>
+  <span class="clubpro">
+    <a class="inema" href="https://inema.club" target="_blank" rel="noopener">INEMA.CLUB</a>
+    <span class="sep">-</span>
+    <a class="pro" href="https://inema.pro" target="_blank" rel="noopener">PRO</a>
+  </span>
+  <div class="links">
+    <a class="sec" href="#oque">Qué es</a>
+    <a class="sec" href="#fluxo">Cómo funciona</a>
+    <a class="sec" href="#guia">Guía de uso</a>
+    <a class="sec" href="#exemplos">Ejemplos</a>
+    <a class="sec" href="#mapa">Mapa de kits</a>
+    <span class="lang"><a href="../">PT</a><a href="../en/">EN</a><a class="on" href="./">ES</a></span>
+    <button class="tgl" id="themeToggle" aria-label="Cambiar tema" title="Cambiar tema">🌙</button>
+    <a class="btn" href="https://github.com/inematds/caixa-do-agente" target="_blank" rel="noopener">GitHub</a>
+  </div>
+</div></nav>
+
+<header class="hero" id="top">
+  <div class="glow"></div>
+  <div class="wrap">
+    <div>
+      <span class="chip">Modelo + harness = agente</span>
+      <h1>Lo que hace rendir al agente es la <span class="amb">caja</span> alrededor del modelo</h1>
+      <p class="lead">Ponle nota al harness que ya usas y ejecuta cualquier agente en una caja que nace, trabaja y se destruye, sin internet (por defecto) y sin tus archivos de contraseñas.</p>
+      <div class="cta">
+        <a class="btn" href="#guia">Empezar la guía</a>
+        <a class="btn ghost" href="https://github.com/inematds/caixa-do-agente" target="_blank" rel="noopener">Ver en GitHub</a>
+      </div>
+    </div>
+    <figure><img src="../assets/banner-es.jpg" alt="Banner Caja del agente: el harness vale más que el modelo"></figure>
+  </div>
+</header>
+
+<section id="resumo" class="resumo"><div class="wrap">
+  <span class="chip">En resumen</span>
+  <p>La caixa-do-agente (caja del agente) es un kit gratuito para quien ya usa agentes de IA en la computadora, como Claude Code, Codex o DeepSeek Harness. El <em>harness</em> es el software alrededor del modelo: ejecuta los comandos, controla los permisos y guarda el historial. El kit le pone nota de 0 a 10 al harness que usas y ejecuta cualquier agente o comando en una caja Docker desechable, sin internet y sin tus archivos de contraseñas (<code>.env</code>). Necesitas Docker y Python 3.</p>
+</div></section>
+
+<section id="oque"><div class="wrap">
+  <span class="chip">Qué es</span>
+  <h2>Tres piezas, una idea: cuida el cuerpo del agente</h2>
+  <p class="sub">DeepSeek mostró que el mismo modelo cambia casi 9 puntos solo con cambiar el harness. Este kit lleva esa idea a tu máquina.</p>
+  <figure style="margin:0 0 26px;border-radius:16px;overflow:hidden;border:1px solid var(--line);box-shadow:0 30px 80px -30px #000"><img src="../assets/banner-grade-es.jpg" alt="Las piezas del kit: auditar, caja, crear, ejecutar, destruir y mapa de kits" loading="lazy" style="width:100%;display:block"></figure>
+  <div class="grid g3">
+    <div class="card"><h3>📊 auditar.py</h3><p>Lee la configuración de Claude Code, Codex y DeepSeek Harness y da una nota de 0 a 10 en 6 capas: caja, aprobación, bloqueos, verificación, contexto y secretos. Solo lee, no cambia nada.</p></div>
+    <div class="card"><h3>📦 caixa.sh</h3><p>Copia el proyecto sin los secretos, ejecuta el comando en un contenedor sin red y con tope de memoria, CPU y tiempo, muestra qué cambió y borra todo. El original solo cambia con <code>--aplicar</code>.</p></div>
+    <div class="card"><h3>🗺️ Mapa de kits</h3><p>Cada capa que falte apunta a un kit INEMA que la resuelve: bloqueos contra inyección de prompt, lección que se vuelve bloqueo, memoria del proyecto, DeepSeek Harness local.</p></div>
+  </div>
+</div></section>
+
+<section id="fluxo"><div class="wrap">
+  <span class="chip">Cómo funciona</span>
+  <h2>El ciclo de la caja: crea, ejecuta, destruye</h2>
+  <p class="sub">Es el mismo ciclo que DeepSeek usa para entrenar a sus agentes (más de 380 mil cajas al mismo tiempo, según su artículo), a escala de una persona.</p>
+  <div class="flow">
+    <span>Copia sin .env ni claves</span><span class="arr">→</span>
+    <span>Contenedor sin red</span><span class="arr">→</span>
+    <span>Tope de memoria, CPU y tiempo</span><span class="arr">→</span>
+    <span>Patch con los cambios</span><span class="arr">→</span>
+    <span>Contenedor y copia borrados</span>
+  </div>
+</div></section>
+
+<section id="pre"><div class="wrap">
+  <span class="chip">Requisitos previos</span>
+  <h2>Lo que necesitas</h2>
+  <p class="sub">Linux con Docker. En macOS, instala antes <code>brew install coreutils</code> (trae <code>gtimeout</code>). El auditor funciona incluso sin Docker.</p>
+  <div class="grid g3">
+    <div class="card"><h3>Docker</h3><p>Para la caja. Verifica que responda:</p><pre><span class="c"># comando</span>
+docker --version</pre></div>
+    <div class="card"><h3>Python 3</h3><p>Para el auditor (sin bibliotecas extra).</p><pre><span class="c"># comando</span>
+python3 --version</pre></div>
+    <div class="card"><h3>rsync</h3><p>Para copiar el proyecto sin los secretos.</p><pre><span class="c"># comando</span>
+rsync --version | head -1</pre></div>
+  </div>
+</div></section>
+
+<section id="guia"><div class="wrap">
+  <span class="chip">Guía de uso · paso a paso</span>
+  <h2>De cero a la primera caja en 5 minutos</h2>
+  <p class="sub">Los comandos usan solo lo que está en el repositorio. Los pasos 1 a 4, 6 y 7 se ejecutaron en esta máquina el 10/11/2026.</p>
+
+  <div class="step"><div class="b">1</div><div>
+    <h3>Descarga el kit</h3>
+    <p>Clona el repositorio y entra en la carpeta.</p>
+<pre><span class="k">git clone https://github.com/inematds/caixa-do-agente &amp;&amp; cd caixa-do-agente</span></pre>
+  </div></div>
+
+  <div class="step"><div class="b">2</div><div>
+    <h3>Comprueba que la caja funciona</h3>
+    <p>14 verificaciones: <code>.env</code> y claves quedan fuera, red cerrada, original intacto, contenedor borrado, <code>--aplicar</code> funciona, <code>--env</code> pasa solo la variable pedida, y el auditor detecta secretos, sandbox desactivado y máquina sin harness.</p>
+<pre><span class="k">bash testes/teste.sh</span>  <span class="c"># termina con: TUDO OK (14/14)</span></pre>
+  </div></div>
+
+  <div class="step"><div class="b">3</div><div>
+    <h3>Ponle nota a tu harness</h3>
+    <p>Apunta a un proyecto tuyo. El auditor lee la configuración de Claude Code, Codex y DeepSeek Harness (el agente de código abierto de DeepSeek, comando <code>dsh</code>): <code>~/.claude/settings.json</code>, <code>~/.codex/config.toml</code> y <code>~/.dsh/settings.yaml</code> (si existen), y el propio proyecto. Cada capa vale 2 puntos (OK), 1 (MEIO) o 0 (FALTA); la nota es la suma dividida entre 12, por 10.</p>
+<pre><span class="k">python3 auditar.py ~/meu-projeto</span>        <span class="c"># nota de 0 a 10 + el siguiente paso de cada capa</span>
+<span class="k">python3 auditar.py ~/meu-projeto --json</span> <span class="c"># lo mismo, para usar en un script</span></pre>
+  </div></div>
+
+  <div class="step"><div class="b">4</div><div>
+    <h3>Ejecuta algo en la caja</h3>
+    <p>Todo lo que va después de <code>--</code> se ejecuta dentro del contenedor, en la copia del proyecto. Sin red por defecto.</p>
+<pre><span class="k">./caixa.sh ~/meu-projeto -- npm test</span>
+<span class="k">./caixa.sh ~/meu-projeto --imagem python:3.12-slim -- python3 -m unittest</span></pre>
+  </div></div>
+
+  <div class="step"><div class="b">5</div><div>
+    <h3>Ejecuta un agente en la caja</h3>
+    <p>Los agentes necesitan hablar con el modelo, así que habilita la red con <code>--rede</code>. La clave del modelo solo entra si la pides, con <code>--env NOME</code>: la caja recibe únicamente esa variable de tu terminal, ninguna otra. Los archivos de contraseñas del proyecto siguen fuera. Para dar acceso a una carpeta tuya, usa <code>--montar origem:destino:ro</code> (<code>:ro</code> = solo lectura).</p>
+<pre><span class="k">./caixa.sh ~/meu-projeto --rede -- npx -y @deepseek-ai/dsh@latest --help</span>  <span class="c"># probado: 1.ª vez ~5 min (descarga el paquete)</span>
+<span class="k">export ANTHROPIC_API_KEY=...</span>
+<span class="k">./caixa.sh ~/meu-projeto --rede --env ANTHROPIC_API_KEY -- npx -y @anthropic-ai/claude-code -p "rode os testes e corrija o que falhar"</span></pre>
+  </div></div>
+
+  <div class="step"><div class="b">6</div><div>
+    <h3>Revisa y aplica</h3>
+    <p>Cada ejecución que cambia archivos guarda un <code>caixa-AAAAMMDD-HHMMSS.patch</code>: un archivo de texto con la diferencia (el <em>diff</em>) de todo lo que cambió. Queda en la carpeta desde donde ejecutaste el comando (o en la que indiques con <code>--patch PASTA</code>). Léelo antes. Para copiar los cambios de vuelta, usa <code>--aplicar</code> (pide confirmación; un archivo borrado en la caja no se borra en el original).</p>
+<pre><span class="k">less caixa-*.patch</span>
+<span class="k">./caixa.sh ~/meu-projeto --aplicar -- npm run format</span></pre>
+  </div></div>
+
+  <div class="step"><div class="b">7</div><div>
+    <h3>Ajusta los topes</h3>
+    <p>Por defecto: imagen <code>node:22-slim</code>, 4 GB de memoria, 2 CPU, 30 minutos.</p>
+<pre><span class="k">./caixa.sh ~/meu-projeto --memoria 8g --cpus 4 --tempo 7200 -- make build</span></pre>
+  </div></div>
+</div></section>
+
+<section id="exemplos"><div class="wrap">
+  <span class="chip">Ejemplos</span>
+  <h2>Salida real de los dos comandos</h2>
+  <p class="sub">Ejecutados en esta máquina el 10/11/2026.</p>
+  <div class="ex">
+    <figure><img src="../assets/ex1.jpg" alt="Salida de auditar.py con nota 6,7 de 10"><figcaption>El auditor en un proyecto de ejemplo: falta la caja (Codex corre sin sandbox), bloqueos y verificación a medias. Nota 6,7/10.</figcaption></figure>
+    <figure><img src="../assets/ex2.jpg" alt="Salida de caixa.sh: crear, caja, destruir"><figcaption>La caja: 1 secreto quedó fuera, red apagada, 1 archivo cambió, patch guardado, contenedor y copia borrados.</figcaption></figure>
+  </div>
+</div></section>
+
+<section id="mapa"><div class="wrap">
+  <span class="chip">Mapa de kits</span>
+  <h2>Cada capa tiene un kit INEMA</h2>
+  <p class="sub">El auditor apunta a estas guías cuando falta una capa.</p>
+  <div class="phase"><div class="tag">Entender</div><div class="d"><strong><a href="https://inematds.github.io/ai-harness/" target="_blank" rel="noopener">ai-harness</a> · <a href="https://inematds.github.io/agentes-harness/" target="_blank" rel="noopener">agentes-harness</a></strong><span>Qué es un harness en video, y un curso rápido de por qué la terminal con agente le gana al chat.</span></div></div>
+  <div class="phase"><div class="tag">Profundizar</div><div class="d"><strong><a href="https://inematds.github.io/hardnessai/" target="_blank" rel="noopener">hardnessai</a></strong><span>Curso completo de ingeniería agéntica: 5 rutas, 30 módulos.</span></div></div>
+  <div class="phase"><div class="tag">DeepSeek Harness</div><div class="d"><strong><a href="https://inematds.github.io/rea-sem-travas/guia/" target="_blank" rel="noopener">rea-sem-travas</a> · <a href="https://inematds.github.io/dsh-orchestrator/guia/" target="_blank" rel="noopener">dsh-orchestrator</a> · <a href="https://inematds.github.io/ia-sem-censura-defensiva/guia/" target="_blank" rel="noopener">ia-sem-censura-defensiva</a></strong><span>El dsh local en contenedor con modelo abierto; dsh, Codex y Claude Code en el mismo entorno; modelo sin rechazos para seguridad defensiva.</span></div></div>
+  <div class="phase"><div class="tag">Bloqueos</div><div class="d"><strong><a href="https://inematds.github.io/agente-blindado/guia/" target="_blank" rel="noopener">agente-blindado</a></strong><span>5 bloqueos contra inyección de prompt, fuera del prompt, y 10 ataques inofensivos para medir tu agente.</span></div></div>
+  <div class="phase"><div class="tag">Verificación</div><div class="d"><strong><a href="https://inematds.github.io/agente-que-aprende/guia/" target="_blank" rel="noopener">agente-que-aprende</a></strong><span>Cada error se vuelve una regla que bloquea el mismo error la próxima vez.</span></div></div>
+  <div class="phase"><div class="tag">Contexto</div><div class="d"><strong><a href="https://inematds.github.io/memoria-projetos/guia/" target="_blank" rel="noopener">memoria-projetos</a> · <a href="https://inematds.github.io/esforco-certo/guia/" target="_blank" rel="noopener">esforco-certo</a></strong><span>Memoria del proyecto que el agente consulta, y cuánto esfuerzo del modelo merece cada tarea.</span></div></div>
+  <div class="phase"><div class="tag">Fuentes</div><div class="d"><strong><a href="https://github.com/deepseek-ai/deepseek-harness" target="_blank" rel="noopener">DeepSeek Harness</a> · <a href="https://arxiv.org/abs/2609.22978" target="_blank" rel="noopener">DSec (arXiv)</a></strong><span>El harness abierto de DeepSeek (MIT) y el artículo de la plataforma de cajas: ~3 millones por día, más de 380 mil al mismo tiempo.</span></div></div>
+</div></section>
+
+<section id="limites"><div class="wrap">
+  <span class="chip">Límites</span>
+  <h2>Lo que la caja no hace</h2>
+  <div class="grid g3">
+    <div class="card"><h3>No es una máquina virtual</h3><p>Docker aísla archivos, red y recursos, pero comparte el núcleo del sistema. Para código en el que no confías en absoluto, usa una VM.</p></div>
+    <div class="card"><h3>Con red, hay salida</h3><p>Con <code>--rede</code>, el agente puede enviar hacia afuera lo que esté en la copia. Los secretos ya quedaron fuera, el resto no.</p></div>
+    <div class="card"><h3>El auditor señala, no garantiza</h3><p>Lee las configuraciones más comunes. Una nota alta no reemplaza revisar lo que el agente puede hacer.</p></div>
+  </div>
+</div></section>
+
+<footer>
+  <div class="wrap">
+    <div class="pill">Docker</div><div class="pill">Python 3</div><div class="pill">Bash</div>
+    <p style="margin-top:18px">Caja del agente · kit gratuito ·
+      <a href="https://github.com/inematds/caixa-do-agente">inematds/caixa-do-agente</a> ·
+      <a href="https://inema.club">INEMA.CLUB</a></p>
+  </div>
+</footer>
+
+<script>
+  (function(){
+    var KEY='caixa-do-agente-theme';
+    var b=document.body, t=document.getElementById('themeToggle');
+    if(localStorage.getItem(KEY)==='light'){ b.classList.add('light'); t.textContent='☀️'; }
+    t.addEventListener('click',function(){
+      var light=b.classList.toggle('light');
+      t.textContent=light?'☀️':'🌙';
+      localStorage.setItem(KEY, light?'light':'dark');
+    });
+  })();
+</script>
+</body>
+</html>
