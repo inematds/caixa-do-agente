@@ -18,6 +18,7 @@
 #   --env NOME       repassa SÓ esta variável do seu terminal para a caixa (repetível; ex.: a chave do modelo)
 #   --montar O:D[:ro] monta a pasta O do seu computador em D na caixa (repetível; use :ro = só leitura)
 #   --patch PASTA    onde salvar o .patch (padrão: a pasta atual)
+#   --interativo     abre o terminal da caixa (para agente com tela: claude, codex, dsh tui, login)
 # Exemplos:
 #   ./caixa.sh ~/meu-app -- npm test
 #   ./caixa.sh ~/meu-app --rede -- npx -y @deepseek-ai/dsh@latest --help
@@ -26,8 +27,8 @@
 set -euo pipefail
 
 IMAGEM=node:22-slim REDE=0 MEM=4g CPUS=2 TEMPO=1800 APLICAR=0 SIM=0
-ENVS=() MONTS=() PATCHDIR=$PWD
-[ $# -ge 1 ] || { sed -n '2,25p' "$0" | sed 's/^# \{0,1\}//'; exit 1; }
+ENVS=() MONTS=() PATCHDIR=$PWD IT=0
+[ $# -ge 1 ] || { sed -n '2,26p' "$0" | sed 's/^# \{0,1\}//'; exit 1; }
 PROJ=$(cd "$1" && pwd); shift
 while [ $# -gt 0 ]; do
   case "$1" in
@@ -40,6 +41,7 @@ while [ $# -gt 0 ]; do
     --sim) SIM=1; shift;;
     --env) [ -n "${!2:-}" ] || { echo "variável $2 vazia ou inexistente no seu terminal" >&2; exit 1; }; ENVS+=(-e "$2"); shift 2;;
     --montar) MONTS+=(-v "$2"); shift 2;;
+    --interativo) IT=1; shift;;
     --patch) PATCHDIR=$(cd "$2" && pwd); shift 2;;
     --) shift; break;;
     *) echo "opção desconhecida: $1" >&2; exit 1;;
@@ -72,11 +74,12 @@ ARGS=(--name "$NOME" --rm=false -w /trabalho -v "$TMP/trabalho:/trabalho"
       --cap-drop ALL --security-opt no-new-privileges --user "$(id -u):$(id -g)" -e HOME=/tmp)
 [ "$REDE" = 1 ] || ARGS+=(--network none)
 ARGS+=("${ENVS[@]}" "${MONTS[@]}")
+[ "$IT" = 1 ] && ARGS+=(-it)
 [ ${#ENVS[@]} -eq 0 ] || echo "  variáveis repassadas: $(printf '%s ' "${ENVS[@]}" | sed 's/-e //g')"
 [ ${#MONTS[@]} -eq 0 ] || echo "  pastas montadas: $(printf '%s ' "${MONTS[@]}" | sed 's/-v //g')"
 echo "▶ 2/3 CAIXA   $IMAGEM · rede $([ "$REDE" = 1 ] && echo LIGADA || echo desligada) · $MEM · $CPUS CPU · ${TEMPO}s"
 set +e
-"$TO" "$TEMPO" docker run "${ARGS[@]}" "$IMAGEM" "$@"
+"$TO" $([ "$IT" = 1 ] && echo --foreground) "$TEMPO" docker run "${ARGS[@]}" "$IMAGEM" "$@"
 RC=$?
 set -e
 echo "  saída do comando: $RC"

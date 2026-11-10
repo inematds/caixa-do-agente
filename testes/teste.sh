@@ -31,4 +31,8 @@ HOME="$H" python3 auditar.py "$H" | grep -q '^\[FALTA\] Caixa' && ok "auditor: s
 rm -rf "$H/.dsh"
 HOME="$H" python3 auditar.py "$H" --json | python3 -c "import json,sys;d=json.load(sys.stdin);p={i['chave']:i['pontos'] for i in d['itens']};assert p['caixa']==0 and p['aprovacao']==0" && ok "auditor: sem harness, caixa e aprovação = 0" || ruim "auditor sem harness"
 rm -rf "$H"
-echo; [ $F -eq 0 ] && echo "TUDO OK (14/14)" || { echo "$F falha(s)"; exit 1; }
+# --interativo dá um terminal de verdade à caixa (agente com tela)
+if command -v script >/dev/null; then
+  echo | timeout 60 script -qec "./caixa.sh '$P' --imagem $IMG --interativo --tempo 20 -- tty" /dev/null 2>&1 | grep -aq '/dev/pts' && ok "--interativo abre terminal" || ruim "--interativo"
+else ok "--interativo (pulado: sem o comando script)"; fi
+echo; [ $F -eq 0 ] && echo "TUDO OK (15/15)" || { echo "$F falha(s)"; exit 1; }

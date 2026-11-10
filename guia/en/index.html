@@ -129,7 +129,7 @@
     <div>
       <span class="chip">Model + harness = agent</span>
       <h1>What makes an agent perform is the <span class="amb">box</span> around the model</h1>
-      <p class="lead">Score the harness you already use and run any agent in a box that is created, does the work and is destroyed, with no internet (by default) and without your secrets files.</p>
+      <p class="lead">Score the harness you already use and run any agent in a box that is created, does the work and is destroyed, with no internet (by default) and without your secrets files. With or without a screen.</p>
       <div class="cta">
         <a class="btn" href="#guia">Start the guide</a>
         <a class="btn ghost" href="https://github.com/inematds/caixa-do-agente" target="_blank" rel="noopener">View on GitHub</a>
@@ -186,7 +186,8 @@ rsync --version | head -1</pre></div>
 <section id="guia"><div class="wrap">
   <span class="chip">User guide · step by step</span>
   <h2>From zero to your first box in 5 minutes</h2>
-  <p class="sub">The commands use only what is in the repository. Steps 1 to 4, 6 and 7 were run on this machine on 11/10/2026.</p>
+  <p class="sub">The commands use only what is in the repository. Steps 1 to 4, 6 and 7 and the first command of step 5 were run on this machine on 11/10/2026; the Claude Code examples depend on your key or login.</p>
+  <p class="sub">Flags and script output are in Portuguese: --aplicar = apply, --rede = network, --montar = mount, --interativo = interactive, --memoria = memory, --tempo = time, --imagem = image.</p>
 
   <div class="step"><div class="b">1</div><div>
     <h3>Get the kit</h3>
@@ -196,35 +197,40 @@ rsync --version | head -1</pre></div>
 
   <div class="step"><div class="b">2</div><div>
     <h3>Prove the box works</h3>
-    <p>14 checks: <code>.env</code> and keys stay out, network closed, original untouched, container deleted, <code>--aplicar</code> works, <code>--env</code> passes only the requested variable, and the auditor detects a secret, a disabled sandbox and a machine with no harness.</p>
-<pre><span class="k">bash testes/teste.sh</span>  <span class="c"># ends with: TUDO OK (14/14)</span></pre>
+    <p>15 checks: <code>.env</code> and keys stay out, network closed, original untouched, container deleted, <code>--aplicar</code> works, <code>--env</code> passes only the requested variable, <code>--interativo</code> opens a terminal, and the auditor detects a secret, a disabled sandbox and a machine with no harness.</p>
+<pre><span class="k">bash testes/teste.sh</span>  <span class="c"># ends with: TUDO OK (15/15)</span></pre>
   </div></div>
 
   <div class="step"><div class="b">3</div><div>
     <h3>Score your harness</h3>
-    <p>Point it at one of your projects. The auditor reads the settings of Claude Code, Codex and DeepSeek Harness (DeepSeek's open-source agent, command <code>dsh</code>): <code>~/.claude/settings.json</code>, <code>~/.codex/config.toml</code> and <code>~/.dsh/settings.yaml</code> (if they exist), and the project itself. Each layer is worth 2 points (OK), 1 (MEIO) or 0 (FALTA); the score is the sum divided by 12, times 10.</p>
+    <p>Point it at one of your projects. The auditor reads the settings of Claude Code, Codex and DeepSeek Harness (DeepSeek's open-source agent, command <code>dsh</code>): <code>~/.claude/settings.json</code>, <code>~/.codex/config.toml</code> and <code>~/.dsh/settings.yaml</code> (if they exist), and the project itself. Box, Approval and Guardrails come from the global settings combined with the project's, so projects on the same machine share those three.</p>
+    <p>Each layer is worth 2 points (OK), 1 (MEIO) or 0 (FALTA); the score is the sum divided by 12, times 10. <strong>Box</strong>: sandbox enabled in some harness. <strong>Approval</strong>: no harness in "skip everything" mode. <strong>Guardrails</strong>: <code>deny</code> rules (what the agent may never do) and <code>PreToolUse</code> hooks (a script that blocks the action beforehand). <strong>Verification</strong>: tests in the project and <code>Stop</code>/<code>PostToolUse</code> hooks (a script that checks afterwards). <strong>Context</strong>: <code>AGENTS.md</code> or <code>CLAUDE.md</code>. <strong>Secrets</strong>: no <code>.env</code> or key inside the project.</p>
 <pre><span class="k">python3 auditar.py ~/meu-projeto</span>        <span class="c"># 0 to 10 score + the next step for each layer</span>
-<span class="k">python3 auditar.py ~/meu-projeto --json</span> <span class="c"># same thing, for use in scripts</span></pre>
+<span class="k">python3 auditar.py ~/meu-projeto --json</span> <span class="c"># same thing, for use in scripts</span>
+<span class="k">python3 auditar.py --help</span>               <span class="c"># the criterion for each layer</span></pre>
   </div></div>
 
   <div class="step"><div class="b">4</div><div>
     <h3>Run something in the box</h3>
-    <p>Everything after <code>--</code> runs inside the container, on the project copy. No network by default.</p>
-<pre><span class="k">./caixa.sh ~/meu-projeto -- npm test</span>
-<span class="k">./caixa.sh ~/meu-projeto --imagem python:3.12-slim -- python3 -m unittest</span></pre>
+    <p>Everything after <code>--</code> runs inside the container, on a copy of the project. Left out of the copy: <code>.env</code>, keys and credentials, <code>node_modules</code> and <code>.venv</code>. No network by default; if the command needs to install dependencies, use <code>--rede</code>.</p>
+<pre><span class="k">./caixa.sh ~/meu-projeto --imagem python:3.12-slim -- python3 -m unittest</span>  <span class="c"># no dependencies, no network</span>
+<span class="k">./caixa.sh ~/meu-projeto --rede -- sh -c 'npm install &amp;&amp; npm test'</span>           <span class="c"># Node: installs and tests inside the box</span></pre>
   </div></div>
 
   <div class="step"><div class="b">5</div><div>
     <h3>Run an agent in the box</h3>
-    <p>Agents need to talk to the model, so enable the network with <code>--rede</code>. The model key only goes in if you ask for it, with <code>--env NOME</code>: the box receives only that variable from your terminal, no other. The project's secrets files still stay out. To give access to one of your folders, use <code>--montar origem:destino:ro</code> (<code>:ro</code> = read-only).</p>
+    <p>Agents need to talk to the model, so use <code>--rede</code>. There are two ways in:</p>
+    <p><strong>With an API key</strong>: <code>--env NOME</code> passes only that variable from your terminal into the box. In headless mode (<code>-p</code>), Claude Code needs permission to run commands and edit files; inside the disposable box you can allow everything, because the worst case stays trapped in it.</p>
+    <p><strong>With your subscription (login)</strong>: open the agent with <code>--interativo</code> and log in inside the box. The login disappears when the box is destroyed.</p>
+    <p>To give access to one of your folders, use <code>--montar origem:destino:ro</code> (<code>:ro</code> = read-only). The project's secrets files still stay out.</p>
 <pre><span class="k">./caixa.sh ~/meu-projeto --rede -- npx -y @deepseek-ai/dsh@latest --help</span>  <span class="c"># tested: 1st time ~5 min (downloads the package)</span>
-<span class="k">export ANTHROPIC_API_KEY=...</span>
-<span class="k">./caixa.sh ~/meu-projeto --rede --env ANTHROPIC_API_KEY -- npx -y @anthropic-ai/claude-code -p "rode os testes e corrija o que falhar"</span></pre>
+<span class="k">./caixa.sh ~/meu-projeto --rede --env ANTHROPIC_API_KEY -- npx -y @anthropic-ai/claude-code -p "rode os testes e corrija o que falhar" --dangerously-skip-permissions</span>
+<span class="k">./caixa.sh ~/meu-projeto --rede --interativo -- npx -y @anthropic-ai/claude-code</span>  <span class="c"># run /login inside</span></pre>
   </div></div>
 
   <div class="step"><div class="b">6</div><div>
     <h3>Review and apply</h3>
-    <p>Each run that changes files saves a <code>caixa-AAAAMMDD-HHMMSS.patch</code>: a text file with the difference (the <em>diff</em>) of everything that changed. It is saved in the folder you ran the command from (or the one you set with <code>--patch PASTA</code>). Read it first. To copy the changes back, use <code>--aplicar</code> (asks for confirmation; a file deleted in the box is not deleted in the original).</p>
+    <p>Each run that changes files saves a <code>caixa-AAAAMMDD-HHMMSS.patch</code>: a text file with the difference (the <em>diff</em>) of everything that changed. It is saved in the folder you ran the command from (or the one you set with <code>--patch PASTA</code>). It is there for you to review; you do not need to apply it with <code>git apply</code>. To copy the changes back, use <code>--aplicar</code> (asks for confirmation; a file deleted in the box is not deleted in the original).</p>
 <pre><span class="k">less caixa-*.patch</span>
 <span class="k">./caixa.sh ~/meu-projeto --aplicar -- npm run format</span></pre>
   </div></div>
@@ -256,7 +262,7 @@ rsync --version | head -1</pre></div>
   <div class="phase"><div class="tag">Guardrails</div><div class="d"><strong><a href="https://inematds.github.io/agente-blindado/guia/" target="_blank" rel="noopener">agente-blindado</a></strong><span>5 guardrails against prompt injection, outside the prompt, and 10 harmless attacks to test your agent.</span></div></div>
   <div class="phase"><div class="tag">Verification</div><div class="d"><strong><a href="https://inematds.github.io/agente-que-aprende/guia/" target="_blank" rel="noopener">agente-que-aprende</a></strong><span>Every mistake becomes a rule that blocks the same mistake next time.</span></div></div>
   <div class="phase"><div class="tag">Context</div><div class="d"><strong><a href="https://inematds.github.io/memoria-projetos/guia/" target="_blank" rel="noopener">memoria-projetos</a> · <a href="https://inematds.github.io/esforco-certo/guia/" target="_blank" rel="noopener">esforco-certo</a></strong><span>Project memory the agent can consult, and how much model effort each task deserves.</span></div></div>
-  <div class="phase"><div class="tag">Sources</div><div class="d"><strong><a href="https://github.com/deepseek-ai/deepseek-harness" target="_blank" rel="noopener">DeepSeek Harness</a> · <a href="https://arxiv.org/abs/2609.22978" target="_blank" rel="noopener">DSec (arXiv)</a></strong><span>DeepSeek's open harness (MIT) and the paper on its box platform: ~3 million per day, more than 380 thousand at the same time.</span></div></div>
+  <div class="phase"><div class="tag">Sources</div><div class="d"><strong><a href="https://github.com/deepseek-ai/deepseek-harness" target="_blank" rel="noopener">DeepSeek Harness</a> · <a href="https://arxiv.org/abs/2609.22978" target="_blank" rel="noopener">DSec (arXiv)</a></strong><span>DeepSeek's open harness (MIT) and the paper on DSec, the platform where DeepSeek creates the boxes to train its agents: ~3 million per day, more than 380 thousand at the same time.</span></div></div>
 </div></section>
 
 <section id="limites"><div class="wrap">

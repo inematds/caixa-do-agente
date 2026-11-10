@@ -4,7 +4,7 @@ Kit público (inematds/caixa-do-agente, autor dos commits `inematds <inematds@gm
 
 - `caixa.sh` — roda comando/agente em container descartável (sem rede, sem segredos, tetos). Lista de segredos igual à do `auditar.py`: mudou uma, mude a outra.
 - `auditar.py` — só lê configurações; nunca escrever nada na máquina do usuário.
-- Antes de commitar: `bash testes/teste.sh` → `TUDO OK (14/14)`.
+- Antes de commitar: `bash testes/teste.sh` → `TUDO OK (15/15)`.
 - Guia em `guia/` (PT) + `guia/en/` + `guia/es/`; README em 3 idiomas. Mudou o PT, retraduza os dois.
 - Origem: vídeo "A China trouxe nova mensagem: o fim dos agentes" (lives4, 10/11/2026). Sem citar o vídeo de referência.
 

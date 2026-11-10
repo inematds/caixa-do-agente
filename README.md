@@ -29,9 +29,9 @@ python3 auditar.py ~/meu-projeto
 ./caixa.sh ~/meu-projeto -- npm test
 
 # 3. agente com a chave do modelo: só a variável pedida entra na caixa
-./caixa.sh ~/meu-projeto --rede --env ANTHROPIC_API_KEY -- npx -y @anthropic-ai/claude-code -p "rode os testes"
+./caixa.sh ~/meu-projeto --rede --env ANTHROPIC_API_KEY -- npx -y @anthropic-ai/claude-code -p "rode os testes" --dangerously-skip-permissions
 
-# 4. provar que a caixa funciona (14 checagens)
+# 4. provar que a caixa funciona (15 checagens)
 bash testes/teste.sh
 ```
 
@@ -40,7 +40,7 @@ bash testes/teste.sh
 | # | Passo | Comando | Quem |
 |---|---|---|---|
 | 1 | Baixar o kit | `git clone https://github.com/inematds/caixa-do-agente` | você |
-| 2 | Provar a caixa | `bash testes/teste.sh` → `TUDO OK (14/14)` | ⚙️ script |
+| 2 | Provar a caixa | `bash testes/teste.sh` → `TUDO OK (15/15)` | ⚙️ script |
 | 3 | Nota do harness | `python3 auditar.py ~/meu-projeto` | ⚙️ script |
 | 4 | Rodar na caixa | `./caixa.sh ~/meu-projeto -- <comando>` | ⚙️ script |
 | 5 | Revisar o patch | `less caixa-*.patch` | você |
@@ -48,6 +48,9 @@ bash testes/teste.sh
 | 7 | Fechar a camada que faltou | o kit que o auditor apontou | você |
 
 ## O ciclo da caixa
+
+Ficam fora da cópia: `.env`, chaves e credenciais, `node_modules` e `.venv`. Agente com tela (login pela assinatura): `--interativo`.
+
 
 | passo | o que acontece |
 |---|---|

@@ -129,7 +129,7 @@
     <div>
       <span class="chip">Modelo + harness = agente</span>
       <h1>Lo que hace rendir al agente es la <span class="amb">caja</span> alrededor del modelo</h1>
-      <p class="lead">Ponle nota al harness que ya usas y ejecuta cualquier agente en una caja que nace, trabaja y se destruye, sin internet (por defecto) y sin tus archivos de contraseñas.</p>
+      <p class="lead">Ponle nota al harness que ya usas y ejecuta cualquier agente en una caja que nace, trabaja y se destruye, sin internet (por defecto) y sin tus archivos de contraseñas. Con o sin pantalla.</p>
       <div class="cta">
         <a class="btn" href="#guia">Empezar la guía</a>
         <a class="btn ghost" href="https://github.com/inematds/caixa-do-agente" target="_blank" rel="noopener">Ver en GitHub</a>
@@ -186,7 +186,8 @@ rsync --version | head -1</pre></div>
 <section id="guia"><div class="wrap">
   <span class="chip">Guía de uso · paso a paso</span>
   <h2>De cero a la primera caja en 5 minutos</h2>
-  <p class="sub">Los comandos usan solo lo que está en el repositorio. Los pasos 1 a 4, 6 y 7 se ejecutaron en esta máquina el 10/11/2026.</p>
+  <p class="sub">Los comandos usan solo lo que está en el repositorio. Los pasos 1 a 4, 6 y 7 y el primer comando del paso 5 se ejecutaron en esta máquina el 10/11/2026; los ejemplos con Claude Code dependen de tu clave o login.</p>
+  <p class="sub">Los flags y la salida de los scripts están en portugués: --aplicar = aplicar, --rede = red, --montar = montar, --interativo = interactivo, --memoria = memoria, --tempo = tiempo, --imagem = imagen.</p>
 
   <div class="step"><div class="b">1</div><div>
     <h3>Descarga el kit</h3>
@@ -196,35 +197,40 @@ rsync --version | head -1</pre></div>
 
   <div class="step"><div class="b">2</div><div>
     <h3>Comprueba que la caja funciona</h3>
-    <p>14 verificaciones: <code>.env</code> y claves quedan fuera, red cerrada, original intacto, contenedor borrado, <code>--aplicar</code> funciona, <code>--env</code> pasa solo la variable pedida, y el auditor detecta secretos, sandbox desactivado y máquina sin harness.</p>
-<pre><span class="k">bash testes/teste.sh</span>  <span class="c"># termina con: TUDO OK (14/14)</span></pre>
+    <p>15 verificaciones: <code>.env</code> y claves quedan fuera, red cerrada, original intacto, contenedor borrado, <code>--aplicar</code> funciona, <code>--env</code> pasa solo la variable pedida, <code>--interativo</code> abre una terminal, y el auditor detecta secretos, sandbox desactivado y máquina sin harness.</p>
+<pre><span class="k">bash testes/teste.sh</span>  <span class="c"># termina con: TUDO OK (15/15)</span></pre>
   </div></div>
 
   <div class="step"><div class="b">3</div><div>
     <h3>Ponle nota a tu harness</h3>
-    <p>Apunta a un proyecto tuyo. El auditor lee la configuración de Claude Code, Codex y DeepSeek Harness (el agente de código abierto de DeepSeek, comando <code>dsh</code>): <code>~/.claude/settings.json</code>, <code>~/.codex/config.toml</code> y <code>~/.dsh/settings.yaml</code> (si existen), y el propio proyecto. Cada capa vale 2 puntos (OK), 1 (MEIO) o 0 (FALTA); la nota es la suma dividida entre 12, por 10.</p>
+    <p>Apunta a un proyecto tuyo. El auditor lee la configuración de Claude Code, Codex y DeepSeek Harness (el agente de código abierto de DeepSeek, comando <code>dsh</code>): <code>~/.claude/settings.json</code>, <code>~/.codex/config.toml</code> y <code>~/.dsh/settings.yaml</code> (si existen), y el propio proyecto. Caja, Aprobación y Bloqueos salen de la configuración global sumada a la del proyecto, así que los proyectos de la misma máquina comparten esas tres.</p>
+    <p>Cada capa vale 2 puntos (OK), 1 (MEIO) o 0 (FALTA); la nota es la suma dividida entre 12, por 10. <strong>Caja</strong>: sandbox activado en algún harness. <strong>Aprobación</strong>: ningún harness en modo "saltar todo". <strong>Bloqueos</strong>: reglas <code>deny</code> (lo que el agente nunca puede hacer) y ganchos <code>PreToolUse</code> (script que frena la acción antes). <strong>Verificación</strong>: pruebas en el proyecto y ganchos <code>Stop</code>/<code>PostToolUse</code> (script que comprueba después). <strong>Contexto</strong>: <code>AGENTS.md</code> o <code>CLAUDE.md</code>. <strong>Secretos</strong>: ningún <code>.env</code> ni clave dentro del proyecto.</p>
 <pre><span class="k">python3 auditar.py ~/meu-projeto</span>        <span class="c"># nota de 0 a 10 + el siguiente paso de cada capa</span>
-<span class="k">python3 auditar.py ~/meu-projeto --json</span> <span class="c"># lo mismo, para usar en un script</span></pre>
+<span class="k">python3 auditar.py ~/meu-projeto --json</span> <span class="c"># lo mismo, para usar en un script</span>
+<span class="k">python3 auditar.py --help</span>               <span class="c"># el criterio de cada capa</span></pre>
   </div></div>
 
   <div class="step"><div class="b">4</div><div>
     <h3>Ejecuta algo en la caja</h3>
-    <p>Todo lo que va después de <code>--</code> se ejecuta dentro del contenedor, en la copia del proyecto. Sin red por defecto.</p>
-<pre><span class="k">./caixa.sh ~/meu-projeto -- npm test</span>
-<span class="k">./caixa.sh ~/meu-projeto --imagem python:3.12-slim -- python3 -m unittest</span></pre>
+    <p>Todo lo que va después de <code>--</code> se ejecuta dentro del contenedor, en una copia del proyecto. Quedan fuera de la copia: <code>.env</code>, claves y credenciales, <code>node_modules</code> y <code>.venv</code>. Sin red por defecto; si el comando necesita instalar dependencias, usa <code>--rede</code>.</p>
+<pre><span class="k">./caixa.sh ~/meu-projeto --imagem python:3.12-slim -- python3 -m unittest</span>  <span class="c"># sin dependencias, sin red</span>
+<span class="k">./caixa.sh ~/meu-projeto --rede -- sh -c 'npm install &amp;&amp; npm test'</span>           <span class="c"># Node: instala y prueba dentro de la caja</span></pre>
   </div></div>
 
   <div class="step"><div class="b">5</div><div>
     <h3>Ejecuta un agente en la caja</h3>
-    <p>Los agentes necesitan hablar con el modelo, así que habilita la red con <code>--rede</code>. La clave del modelo solo entra si la pides, con <code>--env NOME</code>: la caja recibe únicamente esa variable de tu terminal, ninguna otra. Los archivos de contraseñas del proyecto siguen fuera. Para dar acceso a una carpeta tuya, usa <code>--montar origem:destino:ro</code> (<code>:ro</code> = solo lectura).</p>
+    <p>Los agentes necesitan hablar con el modelo, así que usa <code>--rede</code>. Hay dos formas de entrar:</p>
+    <p><strong>Con clave de API</strong>: <code>--env NOME</code> pasa solo esa variable de tu terminal a la caja. En el modo sin pantalla (<code>-p</code>), Claude Code necesita permiso para ejecutar comandos y editar; dentro de la caja desechable se puede liberar todo, porque el peor caso queda encerrado en ella.</p>
+    <p><strong>Con tu suscripción (login)</strong>: abre el agente con <code>--interativo</code> e inicia sesión dentro de la caja. El login desaparece cuando la caja se destruye.</p>
+    <p>Para dar acceso a una carpeta tuya, usa <code>--montar origem:destino:ro</code> (<code>:ro</code> = solo lectura). Los archivos de contraseñas del proyecto siguen fuera.</p>
 <pre><span class="k">./caixa.sh ~/meu-projeto --rede -- npx -y @deepseek-ai/dsh@latest --help</span>  <span class="c"># probado: 1.ª vez ~5 min (descarga el paquete)</span>
-<span class="k">export ANTHROPIC_API_KEY=...</span>
-<span class="k">./caixa.sh ~/meu-projeto --rede --env ANTHROPIC_API_KEY -- npx -y @anthropic-ai/claude-code -p "rode os testes e corrija o que falhar"</span></pre>
+<span class="k">./caixa.sh ~/meu-projeto --rede --env ANTHROPIC_API_KEY -- npx -y @anthropic-ai/claude-code -p "rode os testes e corrija o que falhar" --dangerously-skip-permissions</span>
+<span class="k">./caixa.sh ~/meu-projeto --rede --interativo -- npx -y @anthropic-ai/claude-code</span>  <span class="c"># haz el /login dentro</span></pre>
   </div></div>
 
   <div class="step"><div class="b">6</div><div>
     <h3>Revisa y aplica</h3>
-    <p>Cada ejecución que cambia archivos guarda un <code>caixa-AAAAMMDD-HHMMSS.patch</code>: un archivo de texto con la diferencia (el <em>diff</em>) de todo lo que cambió. Queda en la carpeta desde donde ejecutaste el comando (o en la que indiques con <code>--patch PASTA</code>). Léelo antes. Para copiar los cambios de vuelta, usa <code>--aplicar</code> (pide confirmación; un archivo borrado en la caja no se borra en el original).</p>
+    <p>Cada ejecución que cambia archivos guarda un <code>caixa-AAAAMMDD-HHMMSS.patch</code>: un archivo de texto con la diferencia (el <em>diff</em>) de todo lo que cambió. Queda en la carpeta desde donde ejecutaste el comando (o en la que indiques con <code>--patch PASTA</code>). Sirve para que lo revises; no hace falta aplicarlo con <code>git apply</code>. Para copiar los cambios de vuelta, usa <code>--aplicar</code> (pide confirmación; un archivo borrado en la caja no se borra en el original).</p>
 <pre><span class="k">less caixa-*.patch</span>
 <span class="k">./caixa.sh ~/meu-projeto --aplicar -- npm run format</span></pre>
   </div></div>
@@ -256,7 +262,7 @@ rsync --version | head -1</pre></div>
   <div class="phase"><div class="tag">Bloqueos</div><div class="d"><strong><a href="https://inematds.github.io/agente-blindado/guia/" target="_blank" rel="noopener">agente-blindado</a></strong><span>5 bloqueos contra inyección de prompt, fuera del prompt, y 10 ataques inofensivos para medir tu agente.</span></div></div>
   <div class="phase"><div class="tag">Verificación</div><div class="d"><strong><a href="https://inematds.github.io/agente-que-aprende/guia/" target="_blank" rel="noopener">agente-que-aprende</a></strong><span>Cada error se vuelve una regla que bloquea el mismo error la próxima vez.</span></div></div>
   <div class="phase"><div class="tag">Contexto</div><div class="d"><strong><a href="https://inematds.github.io/memoria-projetos/guia/" target="_blank" rel="noopener">memoria-projetos</a> · <a href="https://inematds.github.io/esforco-certo/guia/" target="_blank" rel="noopener">esforco-certo</a></strong><span>Memoria del proyecto que el agente consulta, y cuánto esfuerzo del modelo merece cada tarea.</span></div></div>
-  <div class="phase"><div class="tag">Fuentes</div><div class="d"><strong><a href="https://github.com/deepseek-ai/deepseek-harness" target="_blank" rel="noopener">DeepSeek Harness</a> · <a href="https://arxiv.org/abs/2609.22978" target="_blank" rel="noopener">DSec (arXiv)</a></strong><span>El harness abierto de DeepSeek (MIT) y el artículo de la plataforma de cajas: ~3 millones por día, más de 380 mil al mismo tiempo.</span></div></div>
+  <div class="phase"><div class="tag">Fuentes</div><div class="d"><strong><a href="https://github.com/deepseek-ai/deepseek-harness" target="_blank" rel="noopener">DeepSeek Harness</a> · <a href="https://arxiv.org/abs/2609.22978" target="_blank" rel="noopener">DSec (arXiv)</a></strong><span>El harness abierto de DeepSeek (MIT) y el artículo de DSec, la plataforma donde DeepSeek crea las cajas para entrenar a los agentes: ~3 millones por día, más de 380 mil al mismo tiempo.</span></div></div>
 </div></section>
 
 <section id="limites"><div class="wrap">

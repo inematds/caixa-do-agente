@@ -29,18 +29,20 @@ python3 auditar.py ~/meu-projeto
 ./caixa.sh ~/meu-projeto -- npm test
 
 # 3. agent with the model key: only the requested variable goes into the box
-./caixa.sh ~/meu-projeto --rede --env ANTHROPIC_API_KEY -- npx -y @anthropic-ai/claude-code -p "rode os testes"
+./caixa.sh ~/meu-projeto --rede --env ANTHROPIC_API_KEY -- npx -y @anthropic-ai/claude-code -p "rode os testes" --dangerously-skip-permissions
 
-# 4. prove the box works (14 checks)
+# 4. prove the box works (15 checks)
 bash testes/teste.sh
 ```
+
+Flags and script output are in Portuguese: `--aplicar` = apply, `--rede` = network, `--montar` = mount, `--interativo` = interactive, `--memoria` = memory, `--tempo` = time, `--imagem` = image.
 
 ## The process, start to finish
 
 | # | Step | Command | Who |
 |---|---|---|---|
 | 1 | Get the kit | `git clone https://github.com/inematds/caixa-do-agente` | you |
-| 2 | Prove the box | `bash testes/teste.sh` → `TUDO OK (14/14)` | ⚙️ script |
+| 2 | Prove the box | `bash testes/teste.sh` → `TUDO OK (15/15)` | ⚙️ script |
 | 3 | Score the harness | `python3 auditar.py ~/meu-projeto` | ⚙️ script |
 | 4 | Run in the box | `./caixa.sh ~/meu-projeto -- <cmd>` | ⚙️ script |
 | 5 | Review the patch | `less caixa-*.patch` | you |
@@ -48,6 +50,8 @@ bash testes/teste.sh
 | 7 | Close the missing layer | the kit the auditor pointed to | you |
 
 ## The box cycle
+
+Left out of the copy: `.env`, keys and credentials, `node_modules` and `.venv`. Agent with a screen (subscription login): `--interativo`.
 
 | step | what happens |
 |---|---|

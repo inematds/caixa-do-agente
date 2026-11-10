@@ -8,6 +8,15 @@ Lê, sem alterar nada, as configurações que existirem na máquina:
 e o próprio projeto (AGENTS.md/CLAUDE.md, testes, segredos soltos).
 
 Uso:  python3 auditar.py [pasta-do-projeto] [--json]
+
+Camadas (2 = OK, 1 = MEIO, 0 = FALTA; nota = soma / 12 x 10):
+  Caixa       sandbox ligado no Claude Code, no Codex (read-only/workspace-write) ou no dsh
+  Aprovação   há harness e nenhum roda em modo "pula tudo" (bypassPermissions; Codex never + danger-full-access)
+  Travas      regras deny (o que o agente nunca pode) + ganchos PreToolUse (script que barra antes de agir)
+  Verificação testes no projeto + ganchos Stop/PostToolUse (script que confere depois de agir)
+  Contexto    AGENTS.md / CLAUDE.md / GEMINI.md no projeto
+  Segredos    nenhum .env, chave ou credencial dentro da pasta do projeto
+Caixa, Aprovação e Travas vêm da configuração GLOBAL (~/.claude, ~/.codex, ~/.dsh) somada à do projeto.
 """
 import fnmatch, json, os, re, sys
 from pathlib import Path
@@ -107,7 +116,7 @@ def auditar(proj):
     modo = perms.get('defaultMode')
     perigoso = modo == 'bypassPermissions' or (cx_aprov and cx_aprov.group(1) == 'never' and cx_modo == 'danger-full-access')
     tem = bool(harness)
-    item('aprovacao', 'Aprovação (quem confirma)', tem and not perigoso and modo is not None, tem and not perigoso,
+    item('aprovacao', 'Aprovação (quem confirma)', tem and not perigoso, False,
          f"Claude Code defaultMode={modo or 'padrão'}; Codex approval_policy={cx_aprov.group(1) if cx_aprov else '—'}")
     # 3. travas fora do prompt (deny + PreToolUse)
     deny = len(perms.get('deny') or [])
@@ -133,6 +142,8 @@ def auditar(proj):
 
 
 def main():
+    if '-h' in sys.argv or '--help' in sys.argv:
+        print(__doc__.strip()); return
     args = [a for a in sys.argv[1:] if not a.startswith('--')]
     r = auditar(args[0] if args else '.')
     if '--json' in sys.argv:
