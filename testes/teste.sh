@@ -39,4 +39,9 @@ else ok "--interativo (pulado: sem o comando script)"; fi
 ./caixa.sh "$P" --imagem $IMG --aplicar --sim -- sh -c 'mkdir -p node_modules/x __pycache__ && echo a > node_modules/x/i.js && echo b > __pycache__/m.pyc' > "$P.log" 2>&1
 grep -q '0 arquivo(s) mudaram' "$P.log" && [ ! -e "$P/node_modules" ] && [ ! -e "$P/__pycache__" ] && ok "node_modules/__pycache__ não voltam" || ruim "cache voltou ou contou"; rm -f "$P.log"
 ./caixa.sh --help | grep -q 'Uso:' && ok "--help mostra a ajuda" || ruim "--help"
-echo; [ $F -eq 0 ] && echo "TUDO OK (17/17)" || { echo "$F falha(s)"; exit 1; }
+# código-fonte chamado secrets.py (módulo) entra na caixa; arquivo de segredo secrets.json fica fora
+mkdir -p "$P/src"; echo "x=1" > "$P/src/secrets.py"; echo '{"k":"segredoJSON"}' > "$P/secrets.json"
+SS=$(./caixa.sh "$P" --imagem $IMG -- sh -c 'cat src/secrets.py; cat secrets.json 2>&1' 2>&1)
+echo "$SS" | grep -q '^x=1' && ! echo "$SS" | grep -q segredoJSON && ok "secrets.py (código) entra, secrets.json fica fora" || ruim "secrets.py/secrets.json"
+rm -rf "$P/src" "$P/secrets.json" caixa-*.patch
+echo; [ $F -eq 0 ] && echo "TUDO OK (18/18)" || { echo "$F falha(s)"; exit 1; }

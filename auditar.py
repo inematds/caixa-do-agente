@@ -23,7 +23,7 @@ from pathlib import Path
 
 HOME = Path.home()
 SEGREDOS = ['.env', '.env.*', '*.pem', '*.key', 'id_rsa*', 'id_ed25519*', '*.p12', 'credentials*.json',
-            'service-account*.json', '.netrc', '.npmrc', '.pypirc', 'token*.json', 'secrets.*']
+            'service-account*.json', '.netrc', '.npmrc', '.pypirc', 'token*.json', 'secrets.json', 'secrets.yaml', 'secrets.yml', 'secrets.toml', 'secrets.env', '.secrets']
 KITS = {
     'caixa': 'caixa.sh deste kit; DeepSeek Harness em container: rea-sem-travas (https://inematds.github.io/rea-sem-travas/guia/)',
     'aprovacao': 'agente-blindado — aprovação antes de ação destrutiva (https://inematds.github.io/agente-blindado/guia/)',

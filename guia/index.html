@@ -235,8 +235,8 @@ rsync --version | head -1</pre></div>
 
   <div class="step"><div class="b">2</div><div>
     <h3>Prove que a caixa funciona</h3>
-    <p>17 checagens (na 1ª vez baixa a imagem <code>node:22-slim</code>, ~250 MB; a checagem do <code>--interativo</code> usa o comando <code>script</code>): <code>.env</code> e chaves ficam fora, rede fechada, original intacto, container apagado, <code>--aplicar</code> funciona, <code>--env</code> repassa só a variável pedida, <code>--interativo</code> abre terminal, cache e <code>node_modules</code> não voltam ao original, <code>--help</code> funciona, e o auditor detecta segredo, sandbox desligado e máquina sem harness.</p>
-<pre><span class="k">bash testes/teste.sh</span>  <span class="c"># termina com: TUDO OK (17/17)</span></pre>
+    <p>18 checagens (na 1ª vez baixa a imagem <code>node:22-slim</code>, ~250 MB; a checagem do <code>--interativo</code> usa o comando <code>script</code>): <code>.env</code> e chaves ficam fora, rede fechada, original intacto, container apagado, <code>--aplicar</code> funciona, <code>--env</code> repassa só a variável pedida, <code>--interativo</code> abre terminal, cache e <code>node_modules</code> não voltam ao original, <code>--help</code> funciona, e o auditor detecta segredo, sandbox desligado e máquina sem harness.</p>
+<pre><span class="k">bash testes/teste.sh</span>  <span class="c"># termina com: TUDO OK (18/18)</span></pre>
   </div></div>
 
   <div class="step"><div class="b">3</div><div>

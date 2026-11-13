@@ -36,7 +36,7 @@ python3 auditar.py ~/meu-projeto
 # 3. agent with the model key: only the requested variable goes into the box
 ./caixa.sh ~/meu-projeto --rede --env ANTHROPIC_API_KEY -- npx -y @anthropic-ai/claude-code -p "rode os testes" --dangerously-skip-permissions
 
-# 4. prove the box works (17 checks)
+# 4. prove the box works (18 checks)
 bash testes/teste.sh
 ```
 
@@ -47,7 +47,7 @@ Flags and script output are in Portuguese: `--aplicar` = apply, `--rede` = netwo
 | # | Step | Command | Who |
 |---|---|---|---|
 | 1 | Get the kit | `git clone https://github.com/inematds/caixa-do-agente` | you |
-| 2 | Prove the box | `bash testes/teste.sh` → `TUDO OK (17/17)` | ⚙️ script |
+| 2 | Prove the box | `bash testes/teste.sh` → `TUDO OK (18/18)` | ⚙️ script |
 | 3 | Score the harness | `python3 auditar.py ~/meu-projeto` | ⚙️ script |
 | 4 | Run in the box | `./caixa.sh ~/meu-projeto -- <cmd>` | ⚙️ script |
 | 5 | Review the patch | `less caixa-*.patch` | you |

@@ -36,7 +36,7 @@ python3 auditar.py ~/meu-projeto
 # 3. agente con la clave del modelo: solo la variable pedida entra en la caja
 ./caixa.sh ~/meu-projeto --rede --env ANTHROPIC_API_KEY -- npx -y @anthropic-ai/claude-code -p "rode os testes" --dangerously-skip-permissions
 
-# 4. comprobar que la caja funciona (17 verificaciones)
+# 4. comprobar que la caja funciona (18 verificaciones)
 bash testes/teste.sh
 ```
 
@@ -47,7 +47,7 @@ Los flags y la salida de los scripts están en portugués: `--aplicar` = aplicar
 | # | Paso | Comando | Quién |
 |---|---|---|---|
 | 1 | Descargar el kit | `git clone https://github.com/inematds/caixa-do-agente` | tú |
-| 2 | Probar la caja | `bash testes/teste.sh` → `TUDO OK (17/17)` | ⚙️ script |
+| 2 | Probar la caja | `bash testes/teste.sh` → `TUDO OK (18/18)` | ⚙️ script |
 | 3 | Nota del harness | `python3 auditar.py ~/meu-projeto` | ⚙️ script |
 | 4 | Ejecutar en la caja | `./caixa.sh ~/meu-projeto -- <cmd>` | ⚙️ script |
 | 5 | Revisar el patch | `less caixa-*.patch` | tú |

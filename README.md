@@ -36,7 +36,7 @@ python3 auditar.py ~/meu-projeto
 # 3. agente com a chave do modelo: só a variável pedida entra na caixa
 ./caixa.sh ~/meu-projeto --rede --env ANTHROPIC_API_KEY -- npx -y @anthropic-ai/claude-code -p "rode os testes" --dangerously-skip-permissions
 
-# 4. provar que a caixa funciona (17 checagens)
+# 4. provar que a caixa funciona (18 checagens)
 bash testes/teste.sh
 ```
 
@@ -45,7 +45,7 @@ bash testes/teste.sh
 | # | Passo | Comando | Quem |
 |---|---|---|---|
 | 1 | Baixar o kit | `git clone https://github.com/inematds/caixa-do-agente` | você |
-| 2 | Provar a caixa | `bash testes/teste.sh` → `TUDO OK (17/17)` | ⚙️ script |
+| 2 | Provar a caixa | `bash testes/teste.sh` → `TUDO OK (18/18)` | ⚙️ script |
 | 3 | Nota do harness | `python3 auditar.py ~/meu-projeto` | ⚙️ script |
 | 4 | Rodar na caixa | `./caixa.sh ~/meu-projeto -- <comando>` | ⚙️ script |
 | 5 | Revisar o patch | `less caixa-*.patch` | você |

@@ -238,7 +238,7 @@ rsync --version | head -1</pre></div>
   <div class="step"><div class="b">2</div><div>
     <h3>Comprueba que la caja funciona</h3>
     <p>17 verificaciones (la 1.ª vez descarga la imagen <code>node:22-slim</code>, ~250 MB; la verificación de <code>--interativo</code> usa el comando <code>script</code>): <code>.env</code> y claves quedan fuera, red cerrada, original intacto, contenedor borrado, <code>--aplicar</code> funciona, <code>--env</code> pasa solo la variable pedida, <code>--interativo</code> abre una terminal, la caché y <code>node_modules</code> no vuelven al original, <code>--help</code> funciona, y el auditor detecta secretos, sandbox desactivado y máquina sin harness.</p>
-<pre><span class="k">bash testes/teste.sh</span>  <span class="c"># termina con: TUDO OK (17/17)</span></pre>
+<pre><span class="k">bash testes/teste.sh</span>  <span class="c"># termina con: TUDO OK (18/18)</span></pre>
   </div></div>
 
   <div class="step"><div class="b">3</div><div>

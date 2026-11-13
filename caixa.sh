@@ -55,7 +55,7 @@ TO=$(command -v timeout || command -v gtimeout || true)
 
 # Segredos que nunca entram na caixa (mesma lista do auditar.py)
 SEGREDOS=('.env' '.env.*' '*.pem' '*.key' 'id_rsa*' 'id_ed25519*' '*.p12' 'credentials*.json'
-          'service-account*.json' '.netrc' '.npmrc' '.pypirc' 'token*.json' 'secrets.*')
+          'service-account*.json' '.netrc' '.npmrc' '.pypirc' 'token*.json' 'secrets.json' 'secrets.yaml' 'secrets.yml' 'secrets.toml' 'secrets.env' '.secrets')
 
 T0=$(date +%s)
 TMP=$(mktemp -d "${TMPDIR:-/tmp}/caixa.XXXXXX")
