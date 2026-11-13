@@ -152,6 +152,38 @@
 </div></section>
 
 
+<section id="simples"><div class="wrap">
+  <span class="chip">In simple terms</span>
+  <h2>A locked room where the agent works without damaging anything of yours</h2>
+  <p class="sub">When you let Claude Code, Codex, or your Jarvis tinker with your computer on its own, it can reach everything. It almost never makes a mess, but all it takes is one mistake or a malicious prompt hidden in a website or file.</p>
+  <div class="grid g3">
+    <div class="card"><h3>🔑 Your passwords</h3><p>It reads <code>.env</code> files, API keys, and SSH keys.</p></div>
+    <div class="card"><h3>🌐 The internet</h3><p>It can send your data out or download something malicious.</p></div>
+    <div class="card"><h3>📁 Your files</h3><p>It can delete or damage the real project.</p></div>
+  </div>
+  <h3 style="margin-top:28px">What the box does, in 3 steps</h3>
+  <pre><code>./caixa.sh ~/meu-projeto -- npm test</code></pre>
+  <div class="grid g3">
+    <div class="card"><h3>1. Creates</h3><p>Makes a <strong>copy</strong> of the project in a temporary folder and <strong>leaves out</strong> passwords and keys.</p></div>
+    <div class="card"><h3>2. Runs</h3><p>The agent works on the copy, in a Docker container <strong>without internet</strong>, with memory, processor, and time limits.</p></div>
+    <div class="card"><h3>3. Destroys</h3><p>Shows what changed in a <code>.patch</code> file, deletes the container, and deletes the copy.</p></div>
+  </div>
+  <p>Your original project <strong>doesn't change</strong>. You read the <code>.patch</code> and only apply it if you like it (<code>--aplicar</code>). It's like letting a builder work on a <strong>model</strong> of your house, without the safe key: at the end, you check what they did and decide whether to do the same in the real house.</p>
+  <h3 style="margin-top:28px">The second tool: the score</h3>
+  <pre><code>python3 auditar.py ~/meu-projeto</code></pre>
+  <p>It only reads, changes nothing, and gives a <strong>score from 0 to 10</strong> for the protection you already have, based on 6 questions:</p>
+  <div class="grid g3">
+    <div class="card"><h3>📦 Box</h3><p>Does the agent run in isolation?</p></div>
+    <div class="card"><h3>✋ Approval</h3><p>Does someone confirm before dangerous actions?</p></div>
+    <div class="card"><h3>🔒 Safeguards</h3><p>Are there blocks that don't depend on the prompt?</p></div>
+    <div class="card"><h3>✅ Verification</h3><p>Is there a test to prove the work is correct?</p></div>
+    <div class="card"><h3>🧠 Context</h3><p>Does the agent have project instructions and memory?</p></div>
+    <div class="card"><h3>🔑 Secrets</h3><p>Are passwords out of its reach?</p></div>
+  </div>
+  <p>For each missing layer, the auditor points to the INEMA kit that addresses it.</p>
+  <p class="sub" style="margin-top:22px"><strong>In one sentence:</strong> your agent is the employee; caixa-do-agente is the secure room where any employee works, plus a score that tells you how protected your room is.</p>
+</div></section>
+
 <section id="oque"><div class="wrap">
   <span class="chip">What it is</span>
   <h2>Three pieces, one idea: take care of the agent's body</h2>

@@ -151,6 +151,37 @@
   <p style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px"><a class="btn" href="https://www.youtube.com/watch?v=XX_yzA8xyt0" target="_blank" rel="noopener">Ver no YouTube (16:9)</a> <a class="btn ghost" href="https://www.youtube.com/watch?v=9LB89_ImgPo" target="_blank" rel="noopener">Versão vertical (9:16)</a></p>
 </div></section>
 
+<section id="simples"><div class="wrap">
+  <span class="chip">Em palavras simples</span>
+  <h2>Uma sala fechada onde o agente trabalha sem estragar nada seu</h2>
+  <p class="sub">Quando você deixa o Claude Code, o Codex ou o seu Jarvis mexer no computador sozinho, ele alcança tudo. Quase sempre não faz besteira, mas basta um erro ou um prompt malicioso escondido num site ou num arquivo.</p>
+  <div class="grid g3">
+    <div class="card"><h3>🔑 Suas senhas</h3><p>Ele lê os arquivos <code>.env</code>, as chaves de API e as chaves SSH.</p></div>
+    <div class="card"><h3>🌐 A internet</h3><p>Ele pode mandar os seus dados para fora ou baixar coisa ruim.</p></div>
+    <div class="card"><h3>📁 Seus arquivos</h3><p>Ele pode apagar ou estragar o projeto de verdade.</p></div>
+  </div>
+  <h3 style="margin-top:28px">O que a caixa faz, em 3 passos</h3>
+  <pre><code>./caixa.sh ~/meu-projeto -- npm test</code></pre>
+  <div class="grid g3">
+    <div class="card"><h3>1. Cria</h3><p>Faz uma <strong>cópia</strong> do projeto numa pasta temporária e <strong>deixa de fora</strong> as senhas e as chaves.</p></div>
+    <div class="card"><h3>2. Roda</h3><p>O agente trabalha na cópia, num container Docker <strong>sem internet</strong>, com limite de memória, de processador e de tempo.</p></div>
+    <div class="card"><h3>3. Destrói</h3><p>Mostra o que mudou num arquivo <code>.patch</code>, apaga o container e apaga a cópia.</p></div>
+  </div>
+  <p>O seu projeto original <strong>não muda</strong>. Você lê o <code>.patch</code> e só aplica se gostar (<code>--aplicar</code>). É como deixar o pedreiro trabalhar numa <strong>maquete</strong> da sua casa, sem a chave do cofre: no fim você olha o que ele fez e decide se faz igual na casa de verdade.</p>
+  <h3 style="margin-top:28px">A segunda ferramenta: a nota</h3>
+  <pre><code>python3 auditar.py ~/meu-projeto</code></pre>
+  <p>Só lê, não muda nada, e dá uma <strong>nota de 0 a 10</strong> para a proteção que você já tem, olhando 6 perguntas:</p>
+  <div class="grid g3">
+    <div class="card"><h3>📦 Caixa</h3><p>O agente roda isolado?</p></div>
+    <div class="card"><h3>✋ Aprovação</h3><p>Alguém confirma antes das ações perigosas?</p></div>
+    <div class="card"><h3>🔒 Travas</h3><p>Há bloqueios que não dependem do prompt?</p></div>
+    <div class="card"><h3>✅ Verificação</h3><p>Existe teste que prove que o trabalho ficou certo?</p></div>
+    <div class="card"><h3>🧠 Contexto</h3><p>O agente tem instruções e memória do projeto?</p></div>
+    <div class="card"><h3>🔑 Segredos</h3><p>As senhas estão fora do alcance dele?</p></div>
+  </div>
+  <p>Em cada camada que falta, o auditor aponta o kit INEMA que resolve.</p>
+  <p class="sub" style="margin-top:22px"><strong>Em uma frase:</strong> o seu agente é o funcionário; a caixa-do-agente é a sala segura onde qualquer funcionário trabalha, mais uma nota que diz o quanto a sua sala está protegida.</p>
+</div></section>
 
 <section id="oque"><div class="wrap">
   <span class="chip">O que é</span>

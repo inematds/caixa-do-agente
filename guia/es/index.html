@@ -152,6 +152,38 @@
 </div></section>
 
 
+<section id="simples"><div class="wrap">
+  <span class="chip">En palabras sencillas</span>
+  <h2>Una sala cerrada donde el agente trabaja sin dañar nada tuyo</h2>
+  <p class="sub">Cuando dejas que Claude Code, Codex o tu Jarvis use la computadora por su cuenta, puede acceder a todo. Casi siempre no hace nada malo, pero basta con un error o un prompt malicioso escondido en un sitio o en un archivo.</p>
+  <div class="grid g3">
+    <div class="card"><h3>🔑 Tus contraseñas</h3><p>Lee los archivos <code>.env</code>, las claves de API y las claves SSH.</p></div>
+    <div class="card"><h3>🌐 Internet</h3><p>Puede enviar tus datos afuera o descargar algo dañino.</p></div>
+    <div class="card"><h3>📁 Tus archivos</h3><p>Puede borrar o dañar el proyecto real.</p></div>
+  </div>
+  <h3 style="margin-top:28px">Lo que hace la caja, en 3 pasos</h3>
+  <pre><code>./caixa.sh ~/meu-projeto -- npm test</code></pre>
+  <div class="grid g3">
+    <div class="card"><h3>1. Crea</h3><p>Hace una <strong>copia</strong> del proyecto en una carpeta temporal y <strong>deja fuera</strong> las contraseñas y las claves.</p></div>
+    <div class="card"><h3>2. Ejecuta</h3><p>El agente trabaja en la copia, en un contenedor Docker <strong>sin internet</strong>, con límite de memoria, de procesador y de tiempo.</p></div>
+    <div class="card"><h3>3. Destruye</h3><p>Muestra lo que cambió en un archivo <code>.patch</code>, borra el contenedor y borra la copia.</p></div>
+  </div>
+  <p>Tu proyecto original <strong>no cambia</strong>. Lees el <code>.patch</code> y solo lo aplicas si te gusta (<code>--aplicar</code>). Es como dejar que el albañil trabaje en una <strong>maqueta</strong> de tu casa, sin la llave de la caja fuerte: al final revisas lo que hizo y decides si lo haces igual en la casa de verdad.</p>
+  <h3 style="margin-top:28px">La segunda herramienta: la nota</h3>
+  <pre><code>python3 auditar.py ~/meu-projeto</code></pre>
+  <p>Solo lee, no cambia nada, y da una <strong>nota de 0 a 10</strong> para la protección que ya tienes, revisando 6 preguntas:</p>
+  <div class="grid g3">
+    <div class="card"><h3>📦 Caja</h3><p>¿El agente se ejecuta aislado?</p></div>
+    <div class="card"><h3>✋ Aprobación</h3><p>¿Alguien confirma antes de las acciones peligrosas?</p></div>
+    <div class="card"><h3>🔒 Bloqueos</h3><p>¿Hay bloqueos que no dependen del prompt?</p></div>
+    <div class="card"><h3>✅ Verificación</h3><p>¿Existe una prueba que demuestre que el trabajo quedó bien?</p></div>
+    <div class="card"><h3>🧠 Contexto</h3><p>¿El agente tiene instrucciones y memoria del proyecto?</p></div>
+    <div class="card"><h3>🔑 Secretos</h3><p>¿Las contraseñas están fuera de su alcance?</p></div>
+  </div>
+  <p>En cada capa faltante, el auditor indica el kit INEMA que lo resuelve.</p>
+  <p class="sub" style="margin-top:22px"><strong>En una frase:</strong> tu agente es el empleado; caixa-do-agente es la sala segura donde trabaja cualquier empleado, más una nota que indica cuánto está protegida tu sala.</p>
+</div></section>
+
 <section id="oque"><div class="wrap">
   <span class="chip">Qué es</span>
   <h2>Tres piezas, una idea: cuida el cuerpo del agente</h2>
