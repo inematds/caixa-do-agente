@@ -167,7 +167,7 @@
     <div class="card"><h3>2. Roda</h3><p>O agente trabalha na cópia, num container Docker <strong>sem internet</strong>, com limite de memória, de processador e de tempo.</p></div>
     <div class="card"><h3>3. Destrói</h3><p>Mostra o que mudou num arquivo <code>.patch</code>, apaga o container e apaga a cópia.</p></div>
   </div>
-  <p>O seu projeto original <strong>não muda</strong>. Você lê o <code>.patch</code> e só aplica se gostar (<code>--aplicar</code>). É como deixar o pedreiro trabalhar numa <strong>maquete</strong> da sua casa, sem a chave do cofre: no fim você olha o que ele fez e decide se faz igual na casa de verdade.</p>
+  <p>O seu projeto original <strong>não muda</strong>. Você lê o <code>.patch</code> e só aplica se gostar (<code>patch -p1</code>, no passo 6). É como deixar o pedreiro trabalhar numa <strong>maquete</strong> da sua casa, sem a chave do cofre: no fim você olha o que ele fez e decide se faz igual na casa de verdade.</p>
   <h3 style="margin-top:28px">A segunda ferramenta: a nota</h3>
   <pre><code>python3 auditar.py ~/meu-projeto</code></pre>
   <p>Só lê, não muda nada, e dá uma <strong>nota de 0 a 10</strong> para a proteção que você já tem, olhando 6 perguntas:</p>
@@ -268,8 +268,10 @@ rsync --version | head -1</pre></div>
 
   <div class="step"><div class="b">6</div><div>
     <h3>Revise e aplique</h3>
-    <p>Cada rodada que muda arquivo salva um <code>caixa-AAAAMMDD-HHMMSS.patch</code>: um arquivo de texto com a diferença (o <em>diff</em>) de tudo o que mudou. Ele fica na pasta de onde você rodou o comando (ou na que você indicar com <code>--patch PASTA</code>) e serve para você revisar; não precisa aplicar com <code>git apply</code>. Para copiar as mudanças de volta, use <code>--aplicar</code> (pede confirmação). Arquivos novos e alterados voltam; <code>node_modules</code>, <code>.venv</code> e caches não voltam; arquivo apagado na caixa não é apagado no original.</p>
-<pre><span class="k">less caixa-*.patch</span>
+    <p>Cada rodada que muda arquivo salva um <code>caixa-AAAAMMDD-HHMMSS.patch</code>: um arquivo de texto com a diferença (o <em>diff</em>) de tudo o que mudou. Ele fica na pasta de onde você rodou o comando (ou na que você indicar com <code>--patch PASTA</code>) e serve para você revisar; não precisa aplicar com <code>git apply</code>. Para levar ao original <strong>exatamente o que você leu</strong>, aplique o próprio patch com <code>patch -p1</code> dentro do projeto. O <code>--aplicar</code> faz uma <strong>rodada nova</strong> e pergunta antes de copiar: leia o patch dessa rodada antes de responder <code>s</code> (com um agente, cada rodada pode sair diferente). Arquivos novos e alterados voltam; <code>node_modules</code>, <code>.venv</code> e caches não voltam; arquivo apagado na caixa não é apagado no original.</p>
+<pre><span class="k">less caixa-AAAAMMDD-HHMMSS.patch</span>                      <span class="c"># leia</span>
+<span class="k">cd ~/meu-projeto &amp;&amp; patch -p1 &lt; ~/caixa-AAAAMMDD-HHMMSS.patch</span>   <span class="c"># aplica exatamente o que você leu</span>
+<span class="c"># ou: rodada nova que pergunta antes de copiar (leia o patch novo antes do s)</span>
 <span class="k">./caixa.sh ~/meu-projeto --rede --aplicar -- sh -c 'npm install &amp;&amp; npm run format'</span></pre>
   </div></div>
 

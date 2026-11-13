@@ -51,7 +51,7 @@ Flags and script output are in Portuguese: `--aplicar` = apply, `--rede` = netwo
 | 3 | Score the harness | `python3 auditar.py ~/meu-projeto` | ⚙️ script |
 | 4 | Run in the box | `./caixa.sh ~/meu-projeto -- <cmd>` | ⚙️ script |
 | 5 | Review the patch | `less caixa-*.patch` | you |
-| 6 | Apply (optional) | `./caixa.sh ~/meu-projeto --aplicar -- <cmd>` | you |
+| 6 | Apply what you read (optional) | `cd ~/meu-projeto && patch -p1 < caixa-*.patch` | you |
 | 7 | Close the missing layer | the kit the auditor pointed to | you |
 
 ## The box cycle
@@ -64,7 +64,7 @@ Left out of the copy: `.env`, keys and credentials, `node_modules` and `.venv`. 
 | **2. Box** | the command runs in a container **with no network** (`--rede` enables it), with memory, CPU, process and time limits, without privileges |
 | **3. Destroy** | shows how many files changed, saves a `.patch`, deletes the container and the copy |
 
-The original project only changes with `--aplicar` (asks for confirmation). The `.patch` stays for you to review first.
+The original project only changes if you apply: `patch -p1 < caixa-….patch` inside the project brings exactly what you read. `--aplicar` does a NEW run and asks before copying; read that run's patch before answering `s` (with an agent, each run comes out different).
 `--aplicar` copies new and changed files; a file deleted inside the box is not deleted in the original.
 
 ## The 6 layers the auditor checks

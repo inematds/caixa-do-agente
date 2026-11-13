@@ -49,7 +49,7 @@ bash testes/teste.sh
 | 3 | Nota do harness | `python3 auditar.py ~/meu-projeto` | ⚙️ script |
 | 4 | Rodar na caixa | `./caixa.sh ~/meu-projeto -- <comando>` | ⚙️ script |
 | 5 | Revisar o patch | `less caixa-*.patch` | você |
-| 6 | Aplicar (se quiser) | `./caixa.sh ~/meu-projeto --aplicar -- <comando>` | você |
+| 6 | Aplicar o que você leu (se quiser) | `cd ~/meu-projeto && patch -p1 < caixa-*.patch` | você |
 | 7 | Fechar a camada que faltou | o kit que o auditor apontou | você |
 
 ## O ciclo da caixa
@@ -63,7 +63,7 @@ Ficam fora da cópia: `.env`, chaves e credenciais, `node_modules` e `.venv`. Ag
 | **2. Caixa** | o comando roda num container **sem rede** (`--rede` libera), com teto de memória, CPU, processos e tempo, sem privilégios |
 | **3. Destruir** | mostra quantos arquivos mudaram, salva um `.patch`, apaga o container e a cópia |
 
-O projeto original só muda com `--aplicar` (pede confirmação). O `.patch` fica para você revisar antes.
+O projeto original só muda se você aplicar: `patch -p1 < caixa-….patch` dentro do projeto leva exatamente o que você leu. O `--aplicar` faz uma rodada NOVA e pergunta antes de copiar; leia o patch dessa rodada antes de responder `s` (com agente, cada rodada sai diferente).
 O `--aplicar` copia arquivos novos e alterados; arquivo apagado dentro da caixa não é apagado no original.
 
 ## As 6 camadas que o auditor confere

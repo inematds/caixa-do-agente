@@ -51,7 +51,7 @@ Los flags y la salida de los scripts están en portugués: `--aplicar` = aplicar
 | 3 | Nota del harness | `python3 auditar.py ~/meu-projeto` | ⚙️ script |
 | 4 | Ejecutar en la caja | `./caixa.sh ~/meu-projeto -- <cmd>` | ⚙️ script |
 | 5 | Revisar el patch | `less caixa-*.patch` | tú |
-| 6 | Aplicar (opcional) | `./caixa.sh ~/meu-projeto --aplicar -- <cmd>` | tú |
+| 6 | Aplicar lo que leíste (opcional) | `cd ~/meu-projeto && patch -p1 < caixa-*.patch` | tú |
 | 7 | Cerrar la capa que falta | el kit que señaló el auditor | tú |
 
 ## El ciclo de la caja
@@ -64,7 +64,7 @@ Quedan fuera de la copia: `.env`, claves y credenciales, `node_modules` y `.venv
 | **2. Caja** | el comando se ejecuta en un contenedor **sin red** (`--rede` la habilita), con tope de memoria, CPU, procesos y tiempo, sin privilegios |
 | **3. Destruir** | muestra cuántos archivos cambiaron, guarda un `.patch`, borra el contenedor y la copia |
 
-El proyecto original solo cambia con `--aplicar` (pide confirmación). El `.patch` queda para que lo revises antes.
+El proyecto original solo cambia si aplicas: `patch -p1 < caixa-….patch` dentro del proyecto lleva exactamente lo que leíste. `--aplicar` hace una ejecución NUEVA y pregunta antes de copiar; lee el patch de esa ejecución antes de responder `s` (con un agente, cada ejecución sale distinta).
 `--aplicar` copia archivos nuevos y modificados; un archivo borrado dentro de la caja no se borra en el original.
 
 ## Las 6 capas que revisa el auditor
