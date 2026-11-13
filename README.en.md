@@ -9,6 +9,8 @@
 
 **China sent a new message: the end of agents** (in Portuguese): https://www.youtube.com/watch?v=XX_yzA8xyt0 · vertical version: https://www.youtube.com/watch?v=9LB89_ImgPo
 
+**Your AI agent reads your passwords: the agent box in plain words** (in Portuguese): https://www.youtube.com/watch?v=PiBmzECMBrk
+
 ## What it is
 
 caixa-do-agente (Agent Box) is a free INEMA kit for people who already use AI agents on their computer (Claude Code,

@@ -9,6 +9,8 @@
 
 **China trajo un nuevo mensaje: el fin de los agentes** (en portugués): https://www.youtube.com/watch?v=XX_yzA8xyt0 · versión vertical: https://www.youtube.com/watch?v=9LB89_ImgPo
 
+**Tu agente de IA lee tus contraseñas: la caja del agente en palabras simples** (en portugués): https://www.youtube.com/watch?v=PiBmzECMBrk
+
 ## Qué es
 
 La caixa-do-agente (caja del agente) es un kit gratuito de INEMA para quien ya usa agentes de IA en la computadora

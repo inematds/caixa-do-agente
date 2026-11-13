@@ -9,6 +9,8 @@
 
 **A China trouxe nova mensagem: o fim dos agentes**: https://www.youtube.com/watch?v=XX_yzA8xyt0 · versão vertical: https://www.youtube.com/watch?v=9LB89_ImgPo
 
+**Seu agente de IA lê suas senhas: a caixa do agente em palavras simples**: https://www.youtube.com/watch?v=PiBmzECMBrk
+
 ## O que é
 
 A caixa-do-agente é um kit gratuito do INEMA para quem já usa agentes de IA no computador (Claude Code, Codex,
